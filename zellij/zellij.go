@@ -166,7 +166,7 @@ func (z *Zellij) SelectWindow(targetWindow string) (string, error) {
 }
 
 func (z *Zellij) SwitchOrAttach(name string, opts model.ConnectOpts) (string, error) {
-	if opts.Switch || z.IsAttached() {
+	if z.IsAttached() {
 		if _, err := z.SwitchClient(name); err != nil {
 			return "", fmt.Errorf("failed to switch to zellij session: %w", err)
 		}

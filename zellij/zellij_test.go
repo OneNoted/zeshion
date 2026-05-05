@@ -73,3 +73,18 @@ func TestSwitchOrAttachSwitchesWhenAttached(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "switching to zellij session: work", msg)
 }
+
+func TestSwitchOrAttachAttachesOutsideZellijEvenWithSwitchOption(t *testing.T) {
+	mockOs := new(oswrap.MockOs)
+	mockShell := new(shell.MockShell)
+	z := NewZellij(mockOs, mockShell, "zellij")
+
+	mockOs.EXPECT().Getenv("ZELLIJ").Return("")
+	mockOs.EXPECT().Getenv("ZELLIJ_SESSION_NAME").Return("")
+	mockShell.EXPECT().Cmd("zellij", "attach", "work").Return("", nil)
+
+	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
+
+	assert.NoError(t, err)
+	assert.Equal(t, "attaching to zellij session: work", msg)
+}
