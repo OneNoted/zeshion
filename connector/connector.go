@@ -24,6 +24,7 @@ type RealConnector struct {
 	namer      namer.Namer
 	startup    startup.Startup
 	tmux       tmux.Tmux
+	zellij     tmux.Tmux
 	mux        tmux.Tmux
 	muxName    string
 	zoxide     zoxide.Zoxide
@@ -38,6 +39,7 @@ func NewConnector(
 	namer namer.Namer,
 	startup startup.Startup,
 	tmux tmux.Tmux,
+	zellij tmux.Tmux,
 	mux tmux.Tmux,
 	muxName string,
 	zoxide zoxide.Zoxide,
@@ -51,6 +53,7 @@ func NewConnector(
 		namer,
 		startup,
 		tmux,
+		zellij,
 		mux,
 		muxName,
 		zoxide,

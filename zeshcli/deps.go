@@ -132,7 +132,7 @@ func (b *BaseDeps) BuildAll(configPath string, muxOverride string) (*Deps, error
 
 	s := startup.NewStartup(b.Os, config, usedLister, selectedMux, b.Home, b.Replacer)
 	n := namer.NewNamer(b.Path, b.Git, b.Home, config)
-	c := connector.NewConnector(config, b.Dir, b.Home, usedLister, n, s, t, selectedMux, muxName, b.Zoxide, b.Tmuxinator)
+	c := connector.NewConnector(config, b.Dir, b.Home, usedLister, n, s, t, zj, selectedMux, muxName, b.Zoxide, b.Tmuxinator)
 	ic := icon.NewIcon(config)
 	p := previewer.NewPreviewer(usedLister, selectedMux, ic, b.Dir, b.Home, l, config, b.Shell)
 	cl := cloner.NewCloner(c, b.Git)

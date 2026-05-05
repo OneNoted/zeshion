@@ -21,6 +21,7 @@ func testConnector(mockDir dir.Dir, mockHome home.Home, mockLister lister.Lister
 		namer:      mockNamer,
 		startup:    mockStartup,
 		tmux:       mockTmux,
+		zellij:     mockTmux,
 		mux:        mockTmux,
 		muxName:    "tmux",
 		zoxide:     mockZoxide,

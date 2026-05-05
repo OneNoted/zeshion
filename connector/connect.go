@@ -26,7 +26,7 @@ func (c *RealConnector) Connect(name string, opts model.ConnectOpts) (string, er
 	connectStrategy := map[string]func(c *RealConnector, connection model.Connection, opts model.ConnectOpts) (string, error){
 		"tmux-pane":       connectToTmuxPane,
 		"tmux":            connectToTmux,
-		"zellij":          connectToMux,
+		"zellij":          connectToZellij,
 		"tmuxinator":      connectToTmuxinator,
 		"config":          connectToMux,
 		"config_wildcard": connectToMux,
