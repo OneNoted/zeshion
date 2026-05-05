@@ -62,7 +62,12 @@ func (o *testOs) ExpandEnv(s string) string {
 }
 
 func (o *testOs) Stat(name string) (os.FileInfo, error) {
-	return nil, nil
+	if o.files != nil {
+		if _, ok := o.files[name]; ok {
+			return nil, nil
+		}
+	}
+	return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrNotExist}
 }
 
 func testdataPath(name string) string {
@@ -189,6 +194,27 @@ func TestGetConfig_XDGConfigHome(t *testing.T) {
 	assert.Equal(t, "test-session", config.SessionConfigs[0].Name)
 }
 
+func TestGetConfig_ZeshConfigTakesPrecedenceOverLegacySeshConfig(t *testing.T) {
+	mockOs := &testOs{
+		homeDir: "/home/testuser",
+		envVars: map[string]string{
+			"XDG_CONFIG_HOME": "/custom/config",
+		},
+		files: map[string][]byte{
+			"/custom/config/zesh/zesh.toml": []byte(`multiplexer = "zellij"` + "\n"),
+			"/custom/config/sesh/sesh.toml": []byte(`multiplexer = "tmux"` + "\n"),
+		},
+	}
+	mockPath := pathwrap.NewPath()
+	mockRuntime := &runtimewrap.MockRunTime{}
+
+	c := NewConfigurator(mockOs, mockPath, mockRuntime)
+	config, err := c.GetConfig()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "zellij", config.Multiplexer)
+}
+
 func TestGetConfig_ImportPathWithEnvVar(t *testing.T) {
 	// Import path uses $VAR syntax — should be env-expanded via oswrap
 	importFile := testdataPath("sesh.toml")
@@ -203,7 +229,7 @@ func TestGetConfig_ImportPathWithEnvVar(t *testing.T) {
 			"CONFIGS": "/custom/dir",
 		},
 		files: map[string][]byte{
-			"/main/sesh.toml":            mainTOML,
+			"/main/sesh.toml":           mainTOML,
 			"/custom/dir/imported.toml": importData,
 		},
 	}
@@ -231,7 +257,7 @@ func TestGetConfig_ImportPathWithTilde(t *testing.T) {
 	mockOs := &testOs{
 		homeDir: "/home/testuser",
 		files: map[string][]byte{
-			"/main/sesh.toml":                             mainTOML,
+			"/main/sesh.toml":                      mainTOML,
 			"/home/testuser/imports/imported.toml": importData,
 		},
 	}

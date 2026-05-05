@@ -11,9 +11,6 @@
 # Test binary, built with `go test -c`
 *.test
 
-# Mocks
-mock_*
-
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
@@ -24,7 +21,7 @@ mock_*
 go.work
 
 # binary
-sesh
+zesh
 
 dist/
 share/

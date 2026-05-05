@@ -26,17 +26,7 @@ func TestConfigStrategy(t *testing.T) {
 	mockZoxide := new(zoxide.MockZoxide)
 	mockTmuxinator := new(tmuxinator.MockTmuxinator)
 
-	c := &RealConnector{
-		model.Config{},
-		mockDir,
-		mockHome,
-		mockLister,
-		mockNamer,
-		mockStartup,
-		mockTmux,
-		mockZoxide,
-		mockTmuxinator,
-	}
+	c := testConnector(mockDir, mockHome, mockLister, mockNamer, mockStartup, mockTmux, mockZoxide, mockTmuxinator)
 	mockTmux.On("AttachSession", mock.Anything).Return("attaching", nil)
 	mockZoxide.On("Add", mock.Anything).Return(nil)
 

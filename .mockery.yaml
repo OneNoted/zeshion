@@ -1,12 +1,9 @@
-all: true
-dir: '{{.InterfaceDir}}'
-structname: Mock{{.InterfaceName}}
-pkgname: '{{.SrcPackageName}}'
-filename: mock_{{.InterfaceName}}.go
-template: testify
-template-data:
-  unroll-variadic: true
 packages:
-  github.com/joshmedeski/sesh:
+  github.com/notes/zesh:
     config:
+      all: true
       recursive: true
+      inpackage: true
+      dir: '{{.InterfaceDir}}'
+      filename: mock_{{.InterfaceName}}.go
+      mockname: Mock{{.InterfaceName}}

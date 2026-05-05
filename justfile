@@ -1,16 +1,16 @@
 # Generate mocks
 mock:
-    GOFLAGS="-buildvcs=false" mockery
+    GOFLAGS="-buildvcs=false" go run github.com/vektra/mockery/v2@v2.53.5 --config /dev/null --all --recursive --inpackage --case underscore --with-expecter=true
 
 # Run tests with coverage
 test: mock
     go test -cover -bench=. -benchmem -race ./... -coverprofile=coverage.out
 
-# Build sesh binary to GOPATH/bin
+# Build zesh binary to GOPATH/bin
 build version="dev":
-    go build -buildvcs=false -ldflags "-X 'main.version={{version}}'" -o `go env GOPATH`/bin/sesh
+    go build -buildvcs=false -ldflags "-X 'main.version={{version}}'" -o `go env GOPATH`/bin/zesh
 
 # Generate man page
 man: build
     mkdir -p share/man/man1
-    sesh man > share/man/man1/sesh.1
+    zesh man > share/man/man1/zesh.1

@@ -2,11 +2,11 @@
   "version": "0.2",
   "words": [
     "tmux",
+    "zellij",
+    "zesh",
     "cmds",
     "zoxide",
-    "sesh",
     "urfave",
-    "joshmedeski",
     "src",
     "srcs"
   ],

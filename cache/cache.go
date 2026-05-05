@@ -34,8 +34,8 @@ type FileCache struct {
 	path string
 }
 
-// NewFileCache creates a FileCache that stores data at $XDG_CACHE_HOME/sesh/sessions.gob
-// (falling back to ~/.cache/sesh/sessions.gob).
+// NewFileCache creates a FileCache that stores data at $XDG_CACHE_HOME/zesh/sessions.gob
+// (falling back to ~/.cache/zesh/sessions.gob).
 func NewFileCache() *FileCache {
 	dir := os.Getenv("XDG_CACHE_HOME")
 	if dir == "" {
@@ -45,7 +45,7 @@ func NewFileCache() *FileCache {
 		}
 		dir = filepath.Join(home, ".cache")
 	}
-	return &FileCache{path: filepath.Join(dir, "sesh", "sessions.gob")}
+	return &FileCache{path: filepath.Join(dir, "zesh", "sessions.gob")}
 }
 
 // NewFileCacheWithPath creates a FileCache at a specific path (useful for testing).

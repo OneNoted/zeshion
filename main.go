@@ -11,7 +11,7 @@ import (
 	"time"    // This is used to get the current date and create the log file
 
 	"charm.land/fang/v2"
-	"github.com/notes/zesh/seshcli"
+	"github.com/notes/zesh/zeshcli"
 )
 
 var version = "dev"
@@ -22,7 +22,7 @@ func main() {
 	slog.Warn("Warning")
 	slog.Error("Error")
 
-	cmd := seshcli.NewRootCommand(version)
+	cmd := zeshcli.NewRootCommand(version)
 	if err := fang.Execute(context.TODO(), cmd, fang.WithColorSchemeFunc(fang.AnsiColorScheme), fang.WithoutVersion()); err != nil {
 		slog.Error("main file: ", "error", err)
 		os.Exit(1)

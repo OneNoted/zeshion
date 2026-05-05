@@ -32,6 +32,10 @@ type RealLister struct {
 	tmuxinator tmuxinator.Tmuxinator
 }
 
-func NewLister(config model.Config, home home.Home, tmux tmux.Tmux, zellij tmux.Tmux, mux tmux.Tmux, zoxide zoxide.Zoxide, tmuxinator tmuxinator.Tmuxinator) Lister {
+func NewLister(config model.Config, home home.Home, tmux tmux.Tmux, zoxide zoxide.Zoxide, tmuxinator tmuxinator.Tmuxinator) Lister {
+	return NewListerWithMux(config, home, tmux, tmux, tmux, zoxide, tmuxinator)
+}
+
+func NewListerWithMux(config model.Config, home home.Home, tmux tmux.Tmux, zellij tmux.Tmux, mux tmux.Tmux, zoxide zoxide.Zoxide, tmuxinator tmuxinator.Tmuxinator) Lister {
 	return &RealLister{config, home, tmux, zellij, mux, zoxide, tmuxinator}
 }

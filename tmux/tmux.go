@@ -38,16 +38,23 @@ func NewTmux(os oswrap.Os, shell shell.Shell, bin string) Tmux {
 	return &RealTmux{os, shell, bin}
 }
 
+func (t *RealTmux) command() string {
+	if t.bin == "" {
+		return "tmux"
+	}
+	return t.bin
+}
+
 func (t *RealTmux) AttachSession(targetSession string) (string, error) {
-	return t.shell.Cmd(t.bin, "attach-session", "-t", targetSession)
+	return t.shell.Cmd(t.command(), "attach-session", "-t", targetSession)
 }
 
 func (t *RealTmux) SwitchClient(targetSession string) (string, error) {
-	return t.shell.Cmd(t.bin, "switch-client", "-t", targetSession)
+	return t.shell.Cmd(t.command(), "switch-client", "-t", targetSession)
 }
 
 func (t *RealTmux) SendKeys(targetPane string, keys string) (string, error) {
-	return t.shell.Cmd(t.bin, "send-keys", "-t", targetPane, keys, "Enter")
+	return t.shell.Cmd(t.command(), "send-keys", "-t", targetPane, keys, "Enter")
 }
 
 func (t *RealTmux) NewSession(sessionName string, startDir string, shellCommand string) (string, error) {
@@ -55,7 +62,7 @@ func (t *RealTmux) NewSession(sessionName string, startDir string, shellCommand 
 	if shellCommand != "" {
 		args = append(args, shellCommand)
 	}
-	return t.shell.Cmd(t.bin, args...)
+	return t.shell.Cmd(t.command(), args...)
 }
 
 func (t *RealTmux) NewWindow(startDir string, name string, shellCommand string) (string, error) {
@@ -63,15 +70,15 @@ func (t *RealTmux) NewWindow(startDir string, name string, shellCommand string) 
 	if shellCommand != "" {
 		args = append(args, shellCommand)
 	}
-	return t.shell.Cmd(t.bin, args...)
+	return t.shell.Cmd(t.command(), args...)
 }
 
 func (t *RealTmux) CapturePane(targetSession string) (string, error) {
-	return t.shell.Cmd(t.bin, "capture-pane", "-e", "-p", "-t", targetSession)
+	return t.shell.Cmd(t.command(), "capture-pane", "-e", "-p", "-t", targetSession)
 }
 
 func (t *RealTmux) NextWindow() (string, error) {
-	return t.shell.Cmd(t.bin, "next-window")
+	return t.shell.Cmd(t.command(), "next-window")
 }
 
 func (t *RealTmux) IsAttached() bool {

@@ -20,17 +20,7 @@ import (
 func newConnectorWithMocks() (*RealConnector, *tmuxinator.MockTmuxinator, *tmux.MockTmux) {
 	mockTmuxinator := new(tmuxinator.MockTmuxinator)
 	mockTmux := new(tmux.MockTmux)
-	c := &RealConnector{
-		model.Config{},
-		new(dir.MockDir),
-		new(home.MockHome),
-		new(lister.MockLister),
-		new(namer.MockNamer),
-		new(startup.MockStartup),
-		mockTmux,
-		new(zoxide.MockZoxide),
-		mockTmuxinator,
-	}
+	c := testConnector(new(dir.MockDir), new(home.MockHome), new(lister.MockLister), new(namer.MockNamer), new(startup.MockStartup), mockTmux, new(zoxide.MockZoxide), mockTmuxinator)
 	return c, mockTmuxinator, mockTmux
 }
 

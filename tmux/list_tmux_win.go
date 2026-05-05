@@ -25,7 +25,7 @@ func (t *RealTmux) ListWindows(targetSession string) ([]*model.TmuxWindow, error
 	}
 	args = append(args, "-F", listWindowsFormat())
 
-	output, err := t.shell.ListCmd(t.bin, args...)
+	output, err := t.shell.ListCmd(t.command(), args...)
 	if err != nil {
 		return nil, err
 	}

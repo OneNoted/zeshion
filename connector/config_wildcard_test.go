@@ -25,17 +25,7 @@ func TestConfigWildcardStrategy(t *testing.T) {
 	mockZoxide := new(zoxide.MockZoxide)
 	mockTmuxinator := new(tmuxinator.MockTmuxinator)
 
-	c := &RealConnector{
-		model.Config{},
-		mockDir,
-		mockHome,
-		mockLister,
-		mockNamer,
-		mockStartup,
-		mockTmux,
-		mockZoxide,
-		mockTmuxinator,
-	}
+	c := testConnector(mockDir, mockHome, mockLister, mockNamer, mockStartup, mockTmux, mockZoxide, mockTmuxinator)
 
 	t.Run("should connect via wildcard when pattern matches a directory", func(t *testing.T) {
 		mockLister.On("FindConfigWildcard", "~/projects/myapp").Return(model.WildcardConfig{
