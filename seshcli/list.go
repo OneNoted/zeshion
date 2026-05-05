@@ -1,0 +1,101 @@
+package seshcli
+
+import (
+	"errors"
+	"fmt"
+
+	"github.com/spf13/cobra"
+
+	"github.com/notes/zesh/lister"
+	"github.com/notes/zesh/model"
+)
+
+func NewListCommand(base *BaseDeps) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "list",
+		Aliases: []string{"l"},
+		Short:   "List sessions",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			deps, err := buildDeps(cmd, base)
+			if err != nil {
+				return err
+			}
+			if deps.CachingLister != nil {
+				defer deps.CachingLister.Wait()
+			}
+
+			config, _ := cmd.Flags().GetBool("config")
+			jsonOutput, _ := cmd.Flags().GetBool("json")
+			tmux, _ := cmd.Flags().GetBool("tmux")
+			zellij, _ := cmd.Flags().GetBool("zellij")
+			zoxide, _ := cmd.Flags().GetBool("zoxide")
+			hideAttached, _ := cmd.Flags().GetBool("hide-attached")
+			icons, _ := cmd.Flags().GetBool("icons")
+			noColor, _ := cmd.Flags().GetBool("no-color")
+			tmuxinator, _ := cmd.Flags().GetBool("tmuxinator")
+			hideDuplicates, _ := cmd.Flags().GetBool("hide-duplicates")
+			panes, _ := cmd.Flags().GetBool("panes")
+			blacklisted, _ := cmd.Flags().GetBool("blacklisted")
+
+			if panes && !deps.Mux.IsAttached() {
+				return errors.New("--panes requires being inside a multiplexer session")
+			}
+
+			sessions, err := deps.Lister.List(lister.ListOptions{
+				Config:         config,
+				HideAttached:   hideAttached,
+				Icons:          icons,
+				NoColor:        noColor,
+				Json:           jsonOutput,
+				Tmux:           tmux,
+				Zellij:         zellij,
+				Zoxide:         zoxide,
+				Tmuxinator:     tmuxinator,
+				HideDuplicates: hideDuplicates,
+				Panes:          panes,
+				Blacklisted:    blacklisted,
+			})
+			if err != nil {
+				return fmt.Errorf("couldn't list sessions: %q", err)
+			}
+
+			if jsonOutput {
+				var sessionsArray []model.SeshSession
+				for _, i := range sessions.OrderedIndex {
+					sessionsArray = append(sessionsArray, sessions.Directory[i])
+				}
+				fmt.Println(base.Json.EncodeSessions(sessionsArray))
+				return nil
+			}
+
+			for _, i := range sessions.OrderedIndex {
+				name := sessions.Directory[i].Name
+				if icons {
+					if noColor {
+						name = deps.Icon.AddIconNoColor(sessions.Directory[i])
+					} else {
+						name = deps.Icon.AddIcon(sessions.Directory[i])
+					}
+				}
+				fmt.Println(name)
+			}
+
+			return nil
+		},
+	}
+
+	cmd.Flags().BoolP("config", "c", false, "show configured sessions")
+	cmd.Flags().BoolP("json", "j", false, "output as json")
+	cmd.Flags().BoolP("tmux", "t", false, "show tmux sessions")
+	cmd.Flags().BoolP("zellij", "Z", false, "show zellij sessions")
+	cmd.Flags().BoolP("zoxide", "z", false, "show zoxide results")
+	cmd.Flags().BoolP("hide-attached", "H", false, "don't show currently attached sessions")
+	cmd.Flags().BoolP("icons", "i", false, "show icons")
+	cmd.Flags().BoolP("no-color", "n", false, "show icons without color (requires --icons)")
+	cmd.Flags().BoolP("tmuxinator", "T", false, "show tmuxinator configs")
+	cmd.Flags().BoolP("hide-duplicates", "d", false, "hide duplicate entries")
+	cmd.Flags().BoolP("panes", "p", false, "show panes in current session")
+	cmd.Flags().BoolP("blacklisted", "b", false, "show blacklisted sessions")
+
+	return cmd
+}

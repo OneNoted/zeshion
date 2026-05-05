@@ -1,0 +1,40 @@
+package connector
+
+import (
+	"github.com/notes/zesh/model"
+)
+
+func configWildcardStrategy(c *RealConnector, name string) (model.Connection, error) {
+	wc, found := c.lister.FindConfigWildcard(name)
+	if !found {
+		return model.Connection{Found: false}, nil
+	}
+
+	path, err := c.home.ExpandPath(name)
+	if err != nil {
+		return model.Connection{}, err
+	}
+
+	isDir, absPath := c.dir.Dir(path)
+	if !isDir {
+		return model.Connection{Found: false}, nil
+	}
+
+	nameFromPath, err := c.namer.Name(absPath)
+	if err != nil {
+		return model.Connection{}, err
+	}
+
+	return model.Connection{
+		Found:       true,
+		New:         true,
+		AddToZoxide: true,
+		Session: model.SeshSession{
+			Src:                   "config_wildcard",
+			Name:                  nameFromPath,
+			Path:                  absPath,
+			WindowNames:           wc.Windows,
+			DisableStartupCommand: wc.DisableStartCommand,
+		},
+	}, nil
+}

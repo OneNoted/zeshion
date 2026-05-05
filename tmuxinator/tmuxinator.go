@@ -1,0 +1,23 @@
+package tmuxinator
+
+import (
+	"github.com/notes/zesh/model"
+	"github.com/notes/zesh/shell"
+)
+
+type Tmuxinator interface {
+	List() ([]*model.TmuxinatorConfig, error)
+	Start(targetSession string) (string, error)
+}
+
+type RealTmuxinator struct {
+	shell shell.Shell
+}
+
+func NewTmuxinator(shell shell.Shell) Tmuxinator {
+	return &RealTmuxinator{shell}
+}
+
+func (t *RealTmuxinator) Start(targetSession string) (string, error) {
+	return t.shell.Cmd("tmuxinator", "start", "--no-attach", "--name", targetSession, targetSession)
+}

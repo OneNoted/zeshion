@@ -1,0 +1,106 @@
+package tmux
+
+import (
+	"errors"
+	"testing"
+
+	"github.com/notes/zesh/model"
+	"github.com/notes/zesh/oswrap"
+	"github.com/notes/zesh/shell"
+	"github.com/stretchr/testify/assert"
+	mock "github.com/stretchr/testify/mock"
+)
+
+func TestSwitchOrAttach(t *testing.T) {
+	mockOs := new(oswrap.MockOs)
+	mockShell := new(shell.MockShell)
+	tmux := NewTmux(mockOs, mockShell, "")
+
+	t.Run("switches because of option", func(t *testing.T) {
+		mockOs.ExpectedCalls = nil
+		mockShell.ExpectedCalls = nil
+		mockShell.On("Cmd", "tmux", "switch-client", "-t", mock.Anything).Return("", nil)
+		response, error := tmux.SwitchOrAttach("dotfiles", model.ConnectOpts{Switch: true})
+		assert.Equal(t, "switching to tmux session: dotfiles", response)
+		assert.Equal(t, nil, error)
+	})
+
+	t.Run("switches when attached", func(t *testing.T) {
+		mockOs.ExpectedCalls = nil
+		mockShell.ExpectedCalls = nil
+		mockOs.On("Getenv", "TMUX").Return("/private/tmp/tmux-501/default,72439,4")
+		mockShell.On("Cmd", "tmux", "switch-client", "-t", mock.Anything).Return("", nil)
+		response, error := tmux.SwitchOrAttach("dotfiles", model.ConnectOpts{Switch: false})
+		assert.Equal(t, "switching to tmux session: dotfiles", response)
+		assert.Equal(t, nil, error)
+	})
+
+	t.Run("errors when switching to a missing session", func(t *testing.T) {
+		mockOs.ExpectedCalls = nil
+		mockShell.ExpectedCalls = nil
+		mockOs.On("Getenv", "TMUX").Return("/private/tmp/tmux-501/default,72439,4")
+		mockShell.On("Cmd", "tmux", "switch-client", "-t", mock.Anything).Return("", errors.New("can't find session: dotfiles"))
+		response, err := tmux.SwitchOrAttach("dotfiles", model.ConnectOpts{Switch: false})
+		assert.Equal(t, "", response)
+		assert.EqualError(t, err, "failed to switch to tmux session: can't find session: dotfiles")
+	})
+
+	t.Run("attaches", func(t *testing.T) {
+		mockOs.ExpectedCalls = nil
+		mockShell.ExpectedCalls = nil
+		mockOs.On("Getenv", "TMUX").Return("")
+		mockShell.On("Cmd", "tmux", "attach-session", "-t", mock.Anything).Return("", nil)
+		response, error := tmux.SwitchOrAttach("dotfiles", model.ConnectOpts{Switch: false})
+		assert.Equal(t, "attaching to tmux session: dotfiles", response)
+		assert.Equal(t, nil, error)
+	})
+}
+
+func TestCustomBin(t *testing.T) {
+	mockOs := new(oswrap.MockOs)
+	mockShell := new(shell.MockShell)
+	psmux := NewTmux(mockOs, mockShell, "psmux")
+
+	t.Run("uses psmux binary for new session", func(t *testing.T) {
+		mockShell.On("Cmd", "psmux", "new-session", "-d", "-s", "dotfiles", "-c", "/home/user/dotfiles").Return("", nil)
+		_, err := psmux.NewSession("dotfiles", "/home/user/dotfiles", "")
+		assert.Nil(t, err)
+		mockShell.AssertCalled(t, "Cmd", "psmux", "new-session", "-d", "-s", "dotfiles", "-c", "/home/user/dotfiles")
+	})
+
+	t.Run("uses psmux binary for switch client", func(t *testing.T) {
+		mockOs.On("Getenv", "TMUX").Return("/private/tmp/tmux-501/default,72439,4")
+		mockShell.On("Cmd", "psmux", "switch-client", "-t", "dotfiles").Return("", nil)
+		response, err := psmux.SwitchOrAttach("dotfiles", model.ConnectOpts{Switch: true})
+		assert.Nil(t, err)
+		assert.Equal(t, "switching to tmux session: dotfiles", response)
+		mockShell.AssertCalled(t, "Cmd", "psmux", "switch-client", "-t", "dotfiles")
+	})
+
+	t.Run("uses psmux binary for attach session", func(t *testing.T) {
+		mockOs.ExpectedCalls = nil
+		mockShell.ExpectedCalls = nil
+		mockOs.On("Getenv", "TMUX").Return("")
+		mockShell.On("Cmd", "psmux", "attach-session", "-t", "dotfiles").Return("", nil)
+		response, err := psmux.SwitchOrAttach("dotfiles", model.ConnectOpts{Switch: false})
+		assert.Nil(t, err)
+		assert.Equal(t, "attaching to tmux session: dotfiles", response)
+		mockShell.AssertCalled(t, "Cmd", "psmux", "attach-session", "-t", "dotfiles")
+	})
+
+	t.Run("uses psmux binary for new window in session", func(t *testing.T) {
+		mockShell.ExpectedCalls = nil
+		mockShell.On("Cmd", "psmux", "new-window", "-n", "editor", "-c", "/home/user/dotfiles", "-t", "dotfiles").Return("", nil)
+		_, err := psmux.NewWindowInSession("editor", "/home/user/dotfiles", "dotfiles", "")
+		assert.Nil(t, err)
+		mockShell.AssertCalled(t, "Cmd", "psmux", "new-window", "-n", "editor", "-c", "/home/user/dotfiles", "-t", "dotfiles")
+	})
+
+	t.Run("uses psmux binary for select window", func(t *testing.T) {
+		mockShell.ExpectedCalls = nil
+		mockShell.On("Cmd", "psmux", "select-window", "-t", "dotfiles:^").Return("", nil)
+		_, err := psmux.SelectWindow("dotfiles:^")
+		assert.Nil(t, err)
+		mockShell.AssertCalled(t, "Cmd", "psmux", "select-window", "-t", "dotfiles:^")
+	})
+}
