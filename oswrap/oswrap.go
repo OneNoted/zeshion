@@ -5,6 +5,7 @@ import (
 )
 
 type Os interface {
+	Getpid() int
 	UserConfigDir() (string, error)
 	UserHomeDir() (string, error)
 	ReadFile(name string) ([]byte, error)
@@ -17,6 +18,10 @@ type RealOs struct{}
 
 func NewOs() Os {
 	return &RealOs{}
+}
+
+func (o *RealOs) Getpid() int {
+	return os.Getpid()
 }
 
 func (o *RealOs) UserConfigDir() (string, error) {

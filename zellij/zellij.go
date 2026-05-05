@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/notes/zesh/model"
@@ -129,7 +130,57 @@ func (z *Zellij) NewWindowInSession(name string, startDir string, targetSession 
 }
 
 func (z *Zellij) IsAttached() bool {
-	return z.os.Getenv("ZELLIJ") != "" || z.os.Getenv("ZELLIJ_SESSION_NAME") != ""
+	if z.os.Getenv("ZELLIJ") == "" && z.os.Getenv("ZELLIJ_SESSION_NAME") == "" {
+		return false
+	}
+	return hasZellijAncestor(z.os)
+}
+
+func hasZellijAncestor(os oswrap.Os) bool {
+	pid := os.Getpid()
+	for range 64 {
+		if pid <= 1 {
+			return false
+		}
+
+		comm, err := os.ReadFile(fmt.Sprintf("/proc/%d/comm", pid))
+		if err != nil {
+			// Non-Linux fallback: if Zellij exported its environment but /proc is
+			// unavailable, preserve the previous env-based behavior.
+			return true
+		}
+		if strings.TrimSpace(string(comm)) == "zellij" {
+			return true
+		}
+
+		parent, ok := parentPID(os, pid)
+		if !ok || parent == pid {
+			return false
+		}
+		pid = parent
+	}
+	return false
+}
+
+func parentPID(os oswrap.Os, pid int) (int, bool) {
+	stat, err := os.ReadFile(fmt.Sprintf("/proc/%d/stat", pid))
+	if err != nil {
+		return 0, false
+	}
+	line := string(stat)
+	endComm := strings.LastIndex(line, ")")
+	if endComm < 0 || endComm+2 >= len(line) {
+		return 0, false
+	}
+	fields := strings.Fields(line[endComm+1:])
+	if len(fields) < 2 {
+		return 0, false
+	}
+	parent, err := strconv.Atoi(fields[1])
+	if err != nil {
+		return 0, false
+	}
+	return parent, true
 }
 
 func (z *Zellij) AttachSession(targetSession string) (string, error) {

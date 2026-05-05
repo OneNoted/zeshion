@@ -113,6 +113,51 @@ func (_c *MockOs_Getenv_Call) RunAndReturn(run func(string) string) *MockOs_Gete
 	return _c
 }
 
+// Getpid provides a mock function with no fields
+func (_m *MockOs) Getpid() int {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Getpid")
+	}
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func() int); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	return r0
+}
+
+// MockOs_Getpid_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Getpid'
+type MockOs_Getpid_Call struct {
+	*mock.Call
+}
+
+// Getpid is a helper method to define mock.On call
+func (_e *MockOs_Expecter) Getpid() *MockOs_Getpid_Call {
+	return &MockOs_Getpid_Call{Call: _e.mock.On("Getpid")}
+}
+
+func (_c *MockOs_Getpid_Call) Run(run func()) *MockOs_Getpid_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockOs_Getpid_Call) Return(_a0 int) *MockOs_Getpid_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockOs_Getpid_Call) RunAndReturn(run func() int) *MockOs_Getpid_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ReadFile provides a mock function with given fields: name
 func (_m *MockOs) ReadFile(name string) ([]byte, error) {
 	ret := _m.Called(name)
