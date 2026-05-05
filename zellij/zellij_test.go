@@ -14,7 +14,11 @@ func TestListSessions(t *testing.T) {
 	mockShell := new(shell.MockShell)
 	z := NewZellij(mockOs, mockShell, "zellij")
 
-	mockShell.EXPECT().ListCmd("zellij", "list-sessions").Return([]string{"work", "old (EXITED)", ""}, nil)
+	mockShell.EXPECT().ListCmd("zellij", "list-sessions").Return([]string{
+		"\x1b[32;1mwork\x1b[m [Created \x1b[35;1m40m 22s\x1b[m ago] (current)",
+		"\x1b[32;1mold\x1b[m [Created \x1b[35;1m1h\x1b[m ago] (\x1b[31;1mEXITED\x1b[m - attach to resurrect)",
+		"",
+	}, nil)
 
 	sessions, err := z.ListSessions()
 

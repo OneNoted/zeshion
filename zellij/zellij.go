@@ -3,12 +3,15 @@ package zellij
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/notes/zesh/model"
 	"github.com/notes/zesh/oswrap"
 	"github.com/notes/zesh/shell"
 )
+
+var ansiEscapePattern = regexp.MustCompile(`\x1b\[[0-9;?]*[ -/]*[@-~]`)
 
 type Zellij struct {
 	os    oswrap.Os
@@ -31,14 +34,24 @@ func (z *Zellij) ListSessions() ([]*model.TmuxSession, error) {
 
 	sessions := make([]*model.TmuxSession, 0, len(output))
 	for _, line := range output {
-		name := strings.TrimSpace(line)
+		name := parseSessionName(line)
 		if name == "" {
 			continue
 		}
-		name = strings.TrimSuffix(name, " (EXITED)")
 		sessions = append(sessions, &model.TmuxSession{Name: name})
 	}
 	return sessions, nil
+}
+
+func parseSessionName(line string) string {
+	name := strings.TrimSpace(ansiEscapePattern.ReplaceAllString(line, ""))
+	if createdIndex := strings.Index(name, " [Created "); createdIndex >= 0 {
+		name = name[:createdIndex]
+	}
+	if statusIndex := strings.Index(name, " ("); statusIndex >= 0 {
+		name = name[:statusIndex]
+	}
+	return strings.TrimSpace(name)
 }
 
 func (z *Zellij) ListWindows(targetSession string) ([]*model.TmuxWindow, error) {
