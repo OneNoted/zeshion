@@ -34,7 +34,7 @@ func TestNewSessionUsesBackgroundCreateAndCwd(t *testing.T) {
 	z := NewZellij(mockOs, mockShell, "zellij")
 
 	mockShell.EXPECT().
-		Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "--create-background", "work", "options", "--default-cwd", "/tmp/work").
+		CmdWithOutput("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "--create-background", "work", "options", "--default-cwd", "/tmp/work").
 		Return("", nil)
 
 	out, err := z.NewSession("work", "/tmp/work", "")
@@ -66,10 +66,6 @@ func TestSwitchOrAttachSwitchesWhenAttached(t *testing.T) {
 	z := NewZellij(mockOs, mockShell, "zellij")
 
 	mockOs.EXPECT().Getenv("ZELLIJ").Return("1")
-	mockOs.EXPECT().Getpid().Return(100)
-	mockOs.EXPECT().ReadFile("/proc/100/comm").Return([]byte("fish\n"), nil)
-	mockOs.EXPECT().ReadFile("/proc/100/stat").Return([]byte("100 (fish) S 50 1 1 0 -1 0"), nil)
-	mockOs.EXPECT().ReadFile("/proc/50/comm").Return([]byte("zellij\n"), nil)
 	mockShell.EXPECT().Cmd("zellij", "action", "switch-session", "work").Return("", nil)
 
 	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{})
@@ -85,43 +81,7 @@ func TestSwitchOrAttachAttachesOutsideZellijEvenWithSwitchOption(t *testing.T) {
 
 	mockOs.EXPECT().Getenv("ZELLIJ").Return("")
 	mockOs.EXPECT().Getenv("ZELLIJ_SESSION_NAME").Return("")
-	mockShell.EXPECT().Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
-
-	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
-
-	assert.NoError(t, err)
-	assert.Equal(t, "attaching to zellij session: work", msg)
-}
-
-func TestSwitchOrAttachAttachesWhenZellijEnvIsInheritedOutsidePane(t *testing.T) {
-	mockOs := new(oswrap.MockOs)
-	mockShell := new(shell.MockShell)
-	z := NewZellij(mockOs, mockShell, "zellij")
-
-	mockOs.EXPECT().Getenv("ZELLIJ").Return("0")
-	mockOs.EXPECT().Getpid().Return(100)
-	mockOs.EXPECT().ReadFile("/proc/100/comm").Return([]byte("fish\n"), nil)
-	mockOs.EXPECT().ReadFile("/proc/100/stat").Return([]byte("100 (fish) S 50 1 1 0 -1 0"), nil)
-	mockOs.EXPECT().ReadFile("/proc/50/comm").Return([]byte("kitty\n"), nil)
-	mockShell.EXPECT().Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
-
-	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
-
-	assert.NoError(t, err)
-	assert.Equal(t, "attaching to zellij session: work", msg)
-}
-
-func TestSwitchOrAttachAttachesWhenTerminalEmulatorWasLaunchedFromZellij(t *testing.T) {
-	mockOs := new(oswrap.MockOs)
-	mockShell := new(shell.MockShell)
-	z := NewZellij(mockOs, mockShell, "zellij")
-
-	mockOs.EXPECT().Getenv("ZELLIJ").Return("0")
-	mockOs.EXPECT().Getpid().Return(100)
-	mockOs.EXPECT().ReadFile("/proc/100/comm").Return([]byte("zsh\n"), nil)
-	mockOs.EXPECT().ReadFile("/proc/100/stat").Return([]byte("100 (zsh) S 50 1 1 0 -1 0"), nil)
-	mockOs.EXPECT().ReadFile("/proc/50/comm").Return([]byte("kitty\n"), nil)
-	mockShell.EXPECT().Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
+	mockShell.EXPECT().CmdWithOutput("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
 
 	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
 

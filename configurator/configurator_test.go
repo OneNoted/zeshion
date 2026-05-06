@@ -23,10 +23,6 @@ type testOs struct {
 	envVars     map[string]string
 }
 
-func (o *testOs) Getpid() int {
-	return 0
-}
-
 func (o *testOs) UserHomeDir() (string, error) {
 	return o.homeDir, o.homeDirErr
 }

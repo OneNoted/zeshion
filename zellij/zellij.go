@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/notes/zesh/model"
@@ -13,25 +12,6 @@ import (
 )
 
 var ansiEscapePattern = regexp.MustCompile(`\x1b\[[0-9;?]*[ -/]*[@-~]`)
-
-var terminalBoundaryProcesses = map[string]bool{
-	"Alacritty":             true,
-	"com.mitchellh.ghostty": true,
-	"contour":               true,
-	"foot":                  true,
-	"footclient":            true,
-	"ghostty":               true,
-	"gnome-terminal-server": true,
-	"kitty":                 true,
-	"konsole":               true,
-	"rio":                   true,
-	"tabby":                 true,
-	"tilix":                 true,
-	"wezterm":               true,
-	"wezterm-gui":           true,
-	"xfce4-terminal":        true,
-	"xterm":                 true,
-}
 
 var zellijRuntimeEnv = []string{
 	"ZELLIJ",
@@ -121,7 +101,7 @@ func (z *Zellij) NewSession(sessionName string, startDir string, shellCommand st
 	if startDir != "" {
 		args = append(args, "options", "--default-cwd", startDir)
 	}
-	out, err := z.cleanZellijRuntimeEnvCmd(args...)
+	out, err := z.cleanZellijRuntimeEnvCmdWithOutput(args...)
 	if err != nil {
 		return "", err
 	}
@@ -155,75 +135,21 @@ func (z *Zellij) NewWindowInSession(name string, startDir string, targetSession 
 }
 
 func (z *Zellij) IsAttached() bool {
-	if z.os.Getenv("ZELLIJ") == "" && z.os.Getenv("ZELLIJ_SESSION_NAME") == "" {
-		return false
-	}
-	return hasZellijAncestor(z.os)
-}
-
-func hasZellijAncestor(os oswrap.Os) bool {
-	pid := os.Getpid()
-	for range 64 {
-		if pid <= 1 {
-			return false
-		}
-
-		comm, err := os.ReadFile(fmt.Sprintf("/proc/%d/comm", pid))
-		if err != nil {
-			// Non-Linux fallback: if Zellij exported its environment but /proc is
-			// unavailable, preserve the previous env-based behavior.
-			return true
-		}
-		process := strings.TrimSpace(string(comm))
-		if process == "zellij" {
-			return true
-		}
-		if terminalBoundaryProcesses[process] {
-			return false
-		}
-
-		parent, ok := parentPID(os, pid)
-		if !ok || parent == pid {
-			return false
-		}
-		pid = parent
-	}
-	return false
-}
-
-func parentPID(os oswrap.Os, pid int) (int, bool) {
-	stat, err := os.ReadFile(fmt.Sprintf("/proc/%d/stat", pid))
-	if err != nil {
-		return 0, false
-	}
-	line := string(stat)
-	endComm := strings.LastIndex(line, ")")
-	if endComm < 0 || endComm+2 >= len(line) {
-		return 0, false
-	}
-	fields := strings.Fields(line[endComm+1:])
-	if len(fields) < 2 {
-		return 0, false
-	}
-	parent, err := strconv.Atoi(fields[1])
-	if err != nil {
-		return 0, false
-	}
-	return parent, true
+	return z.os.Getenv("ZELLIJ") != "" || z.os.Getenv("ZELLIJ_SESSION_NAME") != ""
 }
 
 func (z *Zellij) AttachSession(targetSession string) (string, error) {
-	return z.cleanZellijRuntimeEnvCmd("attach", targetSession)
+	return z.cleanZellijRuntimeEnvCmdWithOutput("attach", targetSession)
 }
 
-func (z *Zellij) cleanZellijRuntimeEnvCmd(args ...string) (string, error) {
+func (z *Zellij) cleanZellijRuntimeEnvCmdWithOutput(args ...string) (string, error) {
 	envArgs := make([]string, 0, len(zellijRuntimeEnv)*2+1+len(args))
 	for _, key := range zellijRuntimeEnv {
 		envArgs = append(envArgs, "-u", key)
 	}
 	envArgs = append(envArgs, z.bin)
 	envArgs = append(envArgs, args...)
-	return z.shell.Cmd("env", envArgs...)
+	return z.shell.CmdWithOutput("env", envArgs...)
 }
 
 func (z *Zellij) SendKeys(targetSession string, command string) (string, error) {
