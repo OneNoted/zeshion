@@ -34,7 +34,7 @@ func TestNewSessionUsesBackgroundCreateAndCwd(t *testing.T) {
 	z := NewZellij(mockOs, mockShell, "zellij")
 
 	mockShell.EXPECT().
-		Cmd("zellij", "attach", "--create-background", "work", "options", "--default-cwd", "/tmp/work").
+		Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "--create-background", "work", "options", "--default-cwd", "/tmp/work").
 		Return("", nil)
 
 	out, err := z.NewSession("work", "/tmp/work", "")
@@ -85,7 +85,7 @@ func TestSwitchOrAttachAttachesOutsideZellijEvenWithSwitchOption(t *testing.T) {
 
 	mockOs.EXPECT().Getenv("ZELLIJ").Return("")
 	mockOs.EXPECT().Getenv("ZELLIJ_SESSION_NAME").Return("")
-	mockShell.EXPECT().Cmd("zellij", "attach", "work").Return("", nil)
+	mockShell.EXPECT().Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
 
 	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
 
@@ -103,7 +103,7 @@ func TestSwitchOrAttachAttachesWhenZellijEnvIsInheritedOutsidePane(t *testing.T)
 	mockOs.EXPECT().ReadFile("/proc/100/comm").Return([]byte("fish\n"), nil)
 	mockOs.EXPECT().ReadFile("/proc/100/stat").Return([]byte("100 (fish) S 50 1 1 0 -1 0"), nil)
 	mockOs.EXPECT().ReadFile("/proc/50/comm").Return([]byte("kitty\n"), nil)
-	mockShell.EXPECT().Cmd("zellij", "attach", "work").Return("", nil)
+	mockShell.EXPECT().Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
 
 	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
 
@@ -121,7 +121,7 @@ func TestSwitchOrAttachAttachesWhenTerminalEmulatorWasLaunchedFromZellij(t *test
 	mockOs.EXPECT().ReadFile("/proc/100/comm").Return([]byte("zsh\n"), nil)
 	mockOs.EXPECT().ReadFile("/proc/100/stat").Return([]byte("100 (zsh) S 50 1 1 0 -1 0"), nil)
 	mockOs.EXPECT().ReadFile("/proc/50/comm").Return([]byte("kitty\n"), nil)
-	mockShell.EXPECT().Cmd("zellij", "attach", "work").Return("", nil)
+	mockShell.EXPECT().Cmd("env", "-u", "ZELLIJ", "-u", "ZELLIJ_PANE_ID", "-u", "ZELLIJ_SESSION_NAME", "zellij", "attach", "work").Return("", nil)
 
 	msg, err := z.SwitchOrAttach("work", model.ConnectOpts{Switch: true})
 

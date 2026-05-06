@@ -33,6 +33,12 @@ var terminalBoundaryProcesses = map[string]bool{
 	"xterm":                 true,
 }
 
+var zellijRuntimeEnv = []string{
+	"ZELLIJ",
+	"ZELLIJ_PANE_ID",
+	"ZELLIJ_SESSION_NAME",
+}
+
 type Zellij struct {
 	os    oswrap.Os
 	shell shell.Shell
@@ -115,7 +121,7 @@ func (z *Zellij) NewSession(sessionName string, startDir string, shellCommand st
 	if startDir != "" {
 		args = append(args, "options", "--default-cwd", startDir)
 	}
-	out, err := z.shell.Cmd(z.bin, args...)
+	out, err := z.cleanZellijRuntimeEnvCmd(args...)
 	if err != nil {
 		return "", err
 	}
@@ -207,7 +213,17 @@ func parentPID(os oswrap.Os, pid int) (int, bool) {
 }
 
 func (z *Zellij) AttachSession(targetSession string) (string, error) {
-	return z.shell.Cmd(z.bin, "attach", targetSession)
+	return z.cleanZellijRuntimeEnvCmd("attach", targetSession)
+}
+
+func (z *Zellij) cleanZellijRuntimeEnvCmd(args ...string) (string, error) {
+	envArgs := make([]string, 0, len(zellijRuntimeEnv)*2+1+len(args))
+	for _, key := range zellijRuntimeEnv {
+		envArgs = append(envArgs, "-u", key)
+	}
+	envArgs = append(envArgs, z.bin)
+	envArgs = append(envArgs, args...)
+	return z.shell.Cmd("env", envArgs...)
 }
 
 func (z *Zellij) SendKeys(targetSession string, command string) (string, error) {
