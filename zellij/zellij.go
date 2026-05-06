@@ -14,6 +14,25 @@ import (
 
 var ansiEscapePattern = regexp.MustCompile(`\x1b\[[0-9;?]*[ -/]*[@-~]`)
 
+var terminalBoundaryProcesses = map[string]bool{
+	"Alacritty":             true,
+	"com.mitchellh.ghostty": true,
+	"contour":               true,
+	"foot":                  true,
+	"footclient":            true,
+	"ghostty":               true,
+	"gnome-terminal-server": true,
+	"kitty":                 true,
+	"konsole":               true,
+	"rio":                   true,
+	"tabby":                 true,
+	"tilix":                 true,
+	"wezterm":               true,
+	"wezterm-gui":           true,
+	"xfce4-terminal":        true,
+	"xterm":                 true,
+}
+
 type Zellij struct {
 	os    oswrap.Os
 	shell shell.Shell
@@ -149,8 +168,12 @@ func hasZellijAncestor(os oswrap.Os) bool {
 			// unavailable, preserve the previous env-based behavior.
 			return true
 		}
-		if strings.TrimSpace(string(comm)) == "zellij" {
+		process := strings.TrimSpace(string(comm))
+		if process == "zellij" {
 			return true
+		}
+		if terminalBoundaryProcesses[process] {
+			return false
 		}
 
 		parent, ok := parentPID(os, pid)
