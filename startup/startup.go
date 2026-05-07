@@ -3,12 +3,12 @@ package startup
 import (
 	"fmt"
 
-	"github.com/notes/zesh/home"
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/oswrap"
-	"github.com/notes/zesh/replacer"
-	"github.com/notes/zesh/tmux"
+	"github.com/notes/zeshion/home"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/oswrap"
+	"github.com/notes/zeshion/replacer"
+	"github.com/notes/zeshion/tmux"
 )
 
 type Startup interface {

@@ -1,4 +1,4 @@
-package zeshcli
+package zeshioncli
 
 import (
 	"errors"

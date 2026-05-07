@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/notes/zesh/cache"
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/cache"
+	"github.com/notes/zeshion/model"
 )
 
 const softTTL = 5 * time.Second

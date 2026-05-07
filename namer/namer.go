@@ -3,10 +3,10 @@ package namer
 import (
 	"fmt"
 
-	"github.com/notes/zesh/git"
-	"github.com/notes/zesh/home"
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/pathwrap"
+	"github.com/notes/zeshion/git"
+	"github.com/notes/zeshion/home"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/pathwrap"
 )
 
 type Namer interface {

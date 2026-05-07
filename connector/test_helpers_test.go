@@ -1,15 +1,15 @@
 package connector
 
 import (
-	"github.com/notes/zesh/dir"
-	"github.com/notes/zesh/home"
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/namer"
-	"github.com/notes/zesh/startup"
-	"github.com/notes/zesh/tmux"
-	"github.com/notes/zesh/tmuxinator"
-	"github.com/notes/zesh/zoxide"
+	"github.com/notes/zeshion/dir"
+	"github.com/notes/zeshion/home"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/namer"
+	"github.com/notes/zeshion/startup"
+	"github.com/notes/zeshion/tmux"
+	"github.com/notes/zeshion/tmuxinator"
+	"github.com/notes/zeshion/zoxide"
 )
 
 func testConnector(mockDir dir.Dir, mockHome home.Home, mockLister lister.Lister, mockNamer namer.Namer, mockStartup startup.Startup, mockTmux tmux.Tmux, mockZoxide zoxide.Zoxide, mockTmuxinator tmuxinator.Tmuxinator) *RealConnector {

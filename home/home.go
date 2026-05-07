@@ -3,7 +3,7 @@ package home
 import (
 	"strings"
 
-	"github.com/notes/zesh/oswrap"
+	"github.com/notes/zeshion/oswrap"
 )
 
 type Home interface {

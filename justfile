@@ -6,11 +6,11 @@ mock:
 test: mock
     go test -cover -bench=. -benchmem -race ./... -coverprofile=coverage.out
 
-# Build zesh binary to GOPATH/bin
+# Build zeshion binary to GOPATH/bin
 build version="dev":
-    go build -buildvcs=false -ldflags "-X 'main.version={{version}}'" -o `go env GOPATH`/bin/zesh
+    go build -buildvcs=false -ldflags "-X 'main.version={{version}}'" -o `go env GOPATH`/bin/zeshion
 
 # Generate man page
 man: build
     mkdir -p share/man/man1
-    zesh man > share/man/man1/zesh.1
+    zeshion man > share/man/man1/zeshion.1

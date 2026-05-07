@@ -3,8 +3,8 @@ package shell
 import (
 	"testing"
 
-	"github.com/notes/zesh/execwrap"
-	"github.com/notes/zesh/home"
+	"github.com/notes/zeshion/execwrap"
+	"github.com/notes/zeshion/home"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

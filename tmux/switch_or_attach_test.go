@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/oswrap"
-	"github.com/notes/zesh/shell"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/oswrap"
+	"github.com/notes/zeshion/shell"
 	"github.com/stretchr/testify/assert"
 	mock "github.com/stretchr/testify/mock"
 )

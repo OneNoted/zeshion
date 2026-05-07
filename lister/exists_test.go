@@ -3,7 +3,7 @@ package lister
 import (
 	"testing"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 	"github.com/stretchr/testify/assert"
 )
 

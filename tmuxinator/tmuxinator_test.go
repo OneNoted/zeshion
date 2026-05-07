@@ -3,7 +3,7 @@ package tmuxinator
 import (
 	"testing"
 
-	"github.com/notes/zesh/shell"
+	"github.com/notes/zeshion/shell"
 	"github.com/stretchr/testify/assert"
 )
 

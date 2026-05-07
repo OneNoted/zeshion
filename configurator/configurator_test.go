@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/notes/zesh/pathwrap"
-	"github.com/notes/zesh/runtimewrap"
+	"github.com/notes/zeshion/pathwrap"
+	"github.com/notes/zeshion/runtimewrap"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -194,6 +194,28 @@ func TestGetConfig_XDGConfigHome(t *testing.T) {
 	assert.Equal(t, "test-session", config.SessionConfigs[0].Name)
 }
 
+func TestGetConfig_ZeshionConfigTakesPrecedenceOverLegacyConfigs(t *testing.T) {
+	mockOs := &testOs{
+		homeDir: "/home/testuser",
+		envVars: map[string]string{
+			"XDG_CONFIG_HOME": "/custom/config",
+		},
+		files: map[string][]byte{
+			"/custom/config/zeshion/zeshion.toml": []byte(`multiplexer = "zellij"` + "\n"),
+			"/custom/config/zesh/zesh.toml":       []byte(`multiplexer = "tmux"` + "\n"),
+			"/custom/config/sesh/sesh.toml":       []byte(`multiplexer = "tmux"` + "\n"),
+		},
+	}
+	mockPath := pathwrap.NewPath()
+	mockRuntime := &runtimewrap.MockRunTime{}
+
+	c := NewConfigurator(mockOs, mockPath, mockRuntime)
+	config, err := c.GetConfig()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "zellij", config.Multiplexer)
+}
+
 func TestGetConfig_ZeshConfigTakesPrecedenceOverLegacySeshConfig(t *testing.T) {
 	mockOs := &testOs{
 		homeDir: "/home/testuser",
@@ -215,17 +237,17 @@ func TestGetConfig_ZeshConfigTakesPrecedenceOverLegacySeshConfig(t *testing.T) {
 	assert.Equal(t, "zellij", config.Multiplexer)
 }
 
-func TestGetConfig_ReturnsReadErrorForSelectedZeshConfig(t *testing.T) {
+func TestGetConfig_ReturnsReadErrorForSelectedZeshionConfig(t *testing.T) {
 	mockOs := &testOs{
 		homeDir: "/home/testuser",
 		envVars: map[string]string{
 			"XDG_CONFIG_HOME": "/custom/config",
 		},
 		files: map[string][]byte{
-			"/custom/config/zesh/zesh.toml": nil,
+			"/custom/config/zeshion/zeshion.toml": nil,
 		},
 		readFileErr: map[string]error{
-			"/custom/config/zesh/zesh.toml": errors.New("permission denied"),
+			"/custom/config/zeshion/zeshion.toml": errors.New("permission denied"),
 		},
 	}
 	mockPath := pathwrap.NewPath()
@@ -235,7 +257,7 @@ func TestGetConfig_ReturnsReadErrorForSelectedZeshConfig(t *testing.T) {
 	_, err := c.GetConfig()
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), `couldn't read config file "/custom/config/zesh/zesh.toml"`)
+	assert.Contains(t, err.Error(), `couldn't read config file "/custom/config/zeshion/zeshion.toml"`)
 }
 
 func TestGetConfig_ImportPathWithEnvVar(t *testing.T) {

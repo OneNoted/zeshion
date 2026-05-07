@@ -1,9 +1,9 @@
 package previewer
 
 import (
-	"github.com/notes/zesh/dir"
-	"github.com/notes/zesh/home"
-	"github.com/notes/zesh/ls"
+	"github.com/notes/zeshion/dir"
+	"github.com/notes/zeshion/home"
+	"github.com/notes/zeshion/ls"
 )
 
 type DirectoryPreviewStrategy struct {

@@ -1,11 +1,11 @@
 package lister
 
 import (
-	"github.com/notes/zesh/home"
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/tmux"
-	"github.com/notes/zesh/tmuxinator"
-	"github.com/notes/zesh/zoxide"
+	"github.com/notes/zeshion/home"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/tmux"
+	"github.com/notes/zeshion/tmuxinator"
+	"github.com/notes/zeshion/zoxide"
 )
 
 type Lister interface {

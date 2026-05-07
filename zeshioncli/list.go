@@ -1,4 +1,4 @@
-package zeshcli
+package zeshioncli
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/model"
 )
 
 func NewListCommand(base *BaseDeps) *cobra.Command {

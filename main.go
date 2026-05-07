@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"charm.land/fang/v2"
-	"github.com/notes/zesh/zeshcli"
+	"github.com/notes/zeshion/zeshioncli"
 )
 
 var version = "dev"
@@ -16,7 +16,7 @@ var version = "dev"
 func main() {
 	setupLogger()
 
-	cmd := zeshcli.NewRootCommand(version)
+	cmd := zeshioncli.NewRootCommand(version)
 	if err := fang.Execute(context.Background(), cmd, fang.WithColorSchemeFunc(fang.AnsiColorScheme), fang.WithoutVersion()); err != nil {
 		slog.Error("command failed", "error", err)
 		os.Exit(1)
@@ -24,14 +24,14 @@ func main() {
 }
 
 func setupLogger() {
-	level, ok := parseLogLevel(os.Getenv("ZESH_LOG"))
+	level, ok := parseLogLevel(os.Getenv("ZESHION_LOG"))
 	if !ok {
 		slog.SetDefault(slog.New(slog.NewTextHandler(io.Discard, nil)))
 		return
 	}
 
 	writer := io.Writer(os.Stderr)
-	if path := os.Getenv("ZESH_LOG_FILE"); path != "" {
+	if path := os.Getenv("ZESHION_LOG_FILE"); path != "" {
 		file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
 		if err != nil {
 			slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})))

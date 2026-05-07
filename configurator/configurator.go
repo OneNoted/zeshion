@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/oswrap"
-	"github.com/notes/zesh/pathwrap"
-	"github.com/notes/zesh/runtimewrap"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/oswrap"
+	"github.com/notes/zeshion/pathwrap"
+	"github.com/notes/zeshion/runtimewrap"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -151,21 +151,21 @@ func (c *RealConfigurator) getConfigFileFromPath(configPath string) (model.Confi
 }
 
 func (c *RealConfigurator) readDefaultConfigFile(userConfigDir string) ([]byte, error) {
-	configFilePath := c.configFilePath(userConfigDir, "zesh")
-	if _, err := c.os.Stat(configFilePath); err == nil {
+	for _, app := range []string{"zeshion", "zesh", "sesh"} {
+		configFilePath := c.configFilePath(userConfigDir, app)
+		if _, err := c.os.Stat(configFilePath); err != nil {
+			continue
+		}
+
 		file, err := c.os.ReadFile(configFilePath)
 		if err != nil {
 			return nil, fmt.Errorf("couldn't read config file %q: %w", configFilePath, err)
 		}
+
 		return file, nil
 	}
 
-	configFilePath = c.configFilePath(userConfigDir, "sesh")
-	file, err := c.os.ReadFile(configFilePath)
-	if err != nil {
-		return nil, nil
-	}
-	return file, nil
+	return nil, nil
 }
 
 func (c *RealConfigurator) getConfigFileFromUserConfigDir() (model.Config, error) {

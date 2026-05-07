@@ -1,6 +1,6 @@
 package connector
 
-import "github.com/notes/zesh/model"
+import "github.com/notes/zeshion/model"
 
 func zellijStrategy(c *RealConnector, name string) (model.Connection, error) {
 	session, exists := c.lister.FindZellijSession(name)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 func isTmuxPaneFormat(name string) bool {

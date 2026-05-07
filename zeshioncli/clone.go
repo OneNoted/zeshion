@@ -1,11 +1,11 @@
-package zeshcli
+package zeshioncli
 
 import (
 	"errors"
 
 	"github.com/spf13/cobra"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 func NewCloneCommand(base *BaseDeps) *cobra.Command {

@@ -1,8 +1,8 @@
 package previewer
 
 import (
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/shell"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/shell"
 )
 
 type ConfigPreviewStrategy struct {

@@ -1,9 +1,9 @@
 package previewer
 
 import (
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/ls"
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/ls"
+	"github.com/notes/zeshion/model"
 )
 
 type DefaultConfigPreviewStrategy struct {

@@ -4,7 +4,7 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 type (

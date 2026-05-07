@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/notes/zesh/raw/main/zesh.schema.json",
-  "title": "zesh configuration",
-  "description": "Configuration for zesh, a smart tmux and Zellij session manager",
+  "$id": "https://github.com/notes/zeshion/raw/main/zeshion.schema.json",
+  "title": "zeshion configuration",
+  "description": "Configuration for zeshion, a smart tmux and Zellij session manager",
   "type": "object",
   "properties": {
     "cache": {
@@ -65,7 +65,7 @@
     },
     "tui": {
       "type": "object",
-      "description": "Settings for the zesh picker TUI",
+      "description": "Settings for the zeshion picker TUI",
       "properties": {
         "show_icons": {
           "type": "boolean",

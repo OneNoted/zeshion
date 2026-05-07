@@ -3,7 +3,7 @@
 package json
 
 import (
-	model "github.com/notes/zesh/model"
+	model "github.com/notes/zeshion/model"
 	mock "github.com/stretchr/testify/mock"
 )
 

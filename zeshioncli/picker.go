@@ -1,11 +1,11 @@
-package zeshcli
+package zeshioncli
 
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/model"
-	"github.com/notes/zesh/picker"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/model"
+	"github.com/notes/zeshion/picker"
 )
 
 func NewPickerCommand(base *BaseDeps) *cobra.Command {

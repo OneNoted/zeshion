@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/notes/zesh/cache"
-	"github.com/notes/zesh/lister"
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/cache"
+	"github.com/notes/zeshion/lister"
+	"github.com/notes/zeshion/model"
 )
 
 func fakeSessions() model.SeshSessions {

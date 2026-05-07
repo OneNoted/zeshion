@@ -3,7 +3,7 @@ package lister
 import (
 	"fmt"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 func zellijKey(name string) string {

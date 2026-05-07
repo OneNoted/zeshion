@@ -1,4 +1,4 @@
-module github.com/notes/zesh
+module github.com/notes/zeshion
 
 go 1.25.0
 

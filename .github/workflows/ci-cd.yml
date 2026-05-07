@@ -25,4 +25,4 @@ jobs:
       - name: Run tests
         run: go test -cover -race ./...
       - name: Build
-        run: go build -o zesh .
+        run: go build -o zeshion .

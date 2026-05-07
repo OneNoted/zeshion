@@ -3,7 +3,7 @@ package connector
 import (
 	"fmt"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 // TODO: send to logging (local txt file?)

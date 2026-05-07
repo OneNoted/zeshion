@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/notes/zesh/oswrap"
+	"github.com/notes/zeshion/oswrap"
 	"github.com/stretchr/testify/assert"
 )
 

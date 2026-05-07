@@ -1,7 +1,7 @@
 package connector
 
 import (
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 func configStrategy(c *RealConnector, name string) (model.Connection, error) {

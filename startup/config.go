@@ -1,6 +1,6 @@
 package startup
 
-import "github.com/notes/zesh/model"
+import "github.com/notes/zeshion/model"
 
 func configStrategy(s *RealStartup, session model.SeshSession) (string, error) {
 	config, exists := s.lister.FindConfigSession(session.Name)

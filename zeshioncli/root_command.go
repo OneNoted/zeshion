@@ -1,4 +1,4 @@
-package zeshcli
+package zeshioncli
 
 import (
 	"github.com/spf13/cobra"
@@ -8,10 +8,10 @@ func NewRootCommand(version string) *cobra.Command {
 	base := NewBaseDeps()
 
 	rootCmd := &cobra.Command{
-		Use:              "zesh",
+		Use:              "zeshion",
 		Version:          version,
 		Short:            "Smart session manager for tmux and Zellij",
-		Long:             "Zesh is a smart terminal session manager that helps you create and manage tmux and Zellij sessions quickly and easily using zoxide.",
+		Long:             "Zeshion is a smart terminal session manager that helps you create and manage tmux and Zellij sessions quickly and easily using zoxide.",
 		TraverseChildren: true,
 	}
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 type Icon interface {
@@ -26,7 +26,7 @@ var (
 	tmuxIcon       string = ""
 	configIcon     string = ""
 	tmuxinatorIcon string = ""
-	tmuxPaneIcon       string = ""
+	tmuxPaneIcon   string = ""
 )
 
 // Glyph holds the icon character and ANSI color code for a session source.

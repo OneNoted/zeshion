@@ -10,8 +10,8 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/sahilm/fuzzy"
 
-	"github.com/notes/zesh/icon"
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/icon"
+	"github.com/notes/zeshion/model"
 )
 
 type sessionItem struct {

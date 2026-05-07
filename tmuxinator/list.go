@@ -3,7 +3,7 @@ package tmuxinator
 import (
 	"slices"
 
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/model"
 )
 
 func (t *RealTmuxinator) List() ([]*model.TmuxinatorConfig, error) {

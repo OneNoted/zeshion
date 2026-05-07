@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/notes/zesh/connector"
-	"github.com/notes/zesh/git"
-	"github.com/notes/zesh/model"
+	"github.com/notes/zeshion/connector"
+	"github.com/notes/zeshion/git"
+	"github.com/notes/zeshion/model"
 )
 
 type Cloner interface {

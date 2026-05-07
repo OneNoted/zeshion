@@ -1,7 +1,7 @@
 package git
 
 import (
-	"github.com/notes/zesh/shell"
+	"github.com/notes/zeshion/shell"
 )
 
 type Git interface {
