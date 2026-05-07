@@ -1,9 +1,9 @@
 package previewer
 
 import (
-	"github.com/notes/zeshion/dir"
-	"github.com/notes/zeshion/home"
-	"github.com/notes/zeshion/ls"
+	"github.com/OneNoted/zeshion/dir"
+	"github.com/OneNoted/zeshion/home"
+	"github.com/OneNoted/zeshion/ls"
 )
 
 type DirectoryPreviewStrategy struct {

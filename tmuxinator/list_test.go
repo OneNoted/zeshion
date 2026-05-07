@@ -3,8 +3,8 @@ package tmuxinator
 import (
 	"testing"
 
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/shell"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/shell"
 	"github.com/stretchr/testify/assert"
 )
 

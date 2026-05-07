@@ -3,14 +3,14 @@ package previewer
 import (
 	"testing"
 
-	"github.com/notes/zeshion/dir"
-	"github.com/notes/zeshion/home"
-	"github.com/notes/zeshion/icon"
-	"github.com/notes/zeshion/lister"
-	"github.com/notes/zeshion/ls"
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/shell"
-	"github.com/notes/zeshion/tmux"
+	"github.com/OneNoted/zeshion/dir"
+	"github.com/OneNoted/zeshion/home"
+	"github.com/OneNoted/zeshion/icon"
+	"github.com/OneNoted/zeshion/lister"
+	"github.com/OneNoted/zeshion/ls"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/shell"
+	"github.com/OneNoted/zeshion/tmux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

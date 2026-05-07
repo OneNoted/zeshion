@@ -1,6 +1,6 @@
 package zoxide
 
-import "github.com/notes/zeshion/model"
+import "github.com/OneNoted/zeshion/model"
 
 func (z *RealZoxide) Query(query string) (*model.ZoxideResult, error) {
 	result, err := z.shell.Cmd("zoxide", "query", query)

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/notes/zeshion/pathwrap"
-	"github.com/notes/zeshion/runtimewrap"
+	"github.com/OneNoted/zeshion/pathwrap"
+	"github.com/OneNoted/zeshion/runtimewrap"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

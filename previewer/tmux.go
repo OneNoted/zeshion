@@ -1,8 +1,8 @@
 package previewer
 
 import (
-	"github.com/notes/zeshion/lister"
-	"github.com/notes/zeshion/tmux"
+	"github.com/OneNoted/zeshion/lister"
+	"github.com/OneNoted/zeshion/tmux"
 )
 
 type TmuxPreviewStrategy struct {

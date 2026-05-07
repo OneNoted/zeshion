@@ -3,7 +3,7 @@ package tmux
 import (
 	"testing"
 
-	"github.com/notes/zeshion/shell"
+	"github.com/OneNoted/zeshion/shell"
 	"github.com/stretchr/testify/assert"
 )
 

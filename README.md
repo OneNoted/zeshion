@@ -13,7 +13,7 @@ The project is derived from the MIT-licensed [`joshmedeski/sesh`](https://github
 Install from the module path:
 
 ```sh
-go install github.com/notes/zeshion@latest
+go install github.com/OneNoted/zeshion@latest
 ```
 
 Build from a checkout:

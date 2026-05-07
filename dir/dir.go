@@ -3,9 +3,9 @@ package dir
 import (
 	"strings"
 
-	"github.com/notes/zeshion/git"
-	"github.com/notes/zeshion/oswrap"
-	"github.com/notes/zeshion/pathwrap"
+	"github.com/OneNoted/zeshion/git"
+	"github.com/OneNoted/zeshion/oswrap"
+	"github.com/OneNoted/zeshion/pathwrap"
 )
 
 type Dir interface {

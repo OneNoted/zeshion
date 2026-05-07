@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/notes/zeshion/raw/main/zeshion.schema.json",
+  "$id": "https://github.com/OneNoted/zeshion/raw/main/zeshion.schema.json",
   "title": "zeshion configuration",
   "description": "Configuration for zeshion, a smart tmux and Zellij session manager",
   "type": "object",

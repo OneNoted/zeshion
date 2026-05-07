@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func tmuxPaneKey(windowName string, paneID string) string {

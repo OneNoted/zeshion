@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/oswrap"
-	"github.com/notes/zeshion/pathwrap"
-	"github.com/notes/zeshion/runtimewrap"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/oswrap"
+	"github.com/OneNoted/zeshion/pathwrap"
+	"github.com/OneNoted/zeshion/runtimewrap"
 	"github.com/pelletier/go-toml/v2"
 )
 

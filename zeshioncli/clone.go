@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func NewCloneCommand(base *BaseDeps) *cobra.Command {

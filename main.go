@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"charm.land/fang/v2"
-	"github.com/notes/zeshion/zeshioncli"
+	"github.com/OneNoted/zeshion/zeshioncli"
 )
 
 var version = "dev"

@@ -3,7 +3,7 @@ package lister
 import (
 	"fmt"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func tmuxKey(name string) string {

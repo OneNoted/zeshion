@@ -3,7 +3,7 @@ package connector
 import (
 	"fmt"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 // TODO: send to logging (local txt file?)

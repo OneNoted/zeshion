@@ -3,12 +3,12 @@ package startup
 import (
 	"testing"
 
-	"github.com/notes/zeshion/home"
-	"github.com/notes/zeshion/lister"
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/oswrap"
-	"github.com/notes/zeshion/replacer"
-	"github.com/notes/zeshion/tmux"
+	"github.com/OneNoted/zeshion/home"
+	"github.com/OneNoted/zeshion/lister"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/oswrap"
+	"github.com/OneNoted/zeshion/replacer"
+	"github.com/OneNoted/zeshion/tmux"
 	"github.com/stretchr/testify/assert"
 )
 

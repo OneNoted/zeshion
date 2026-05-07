@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func (l *RealLister) FindConfigWildcard(path string) (model.WildcardConfig, bool) {

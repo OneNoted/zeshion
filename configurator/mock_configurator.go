@@ -3,7 +3,7 @@
 package configurator
 
 import (
-	model "github.com/notes/zeshion/model"
+	model "github.com/OneNoted/zeshion/model"
 	mock "github.com/stretchr/testify/mock"
 )
 

@@ -6,11 +6,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/notes/zeshion/home"
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/tmux"
-	"github.com/notes/zeshion/tmuxinator"
-	"github.com/notes/zeshion/zoxide"
+	"github.com/OneNoted/zeshion/home"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/tmux"
+	"github.com/OneNoted/zeshion/tmuxinator"
+	"github.com/OneNoted/zeshion/zoxide"
 	"github.com/stretchr/testify/assert"
 )
 

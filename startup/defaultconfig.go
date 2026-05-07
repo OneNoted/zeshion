@@ -1,6 +1,6 @@
 package startup
 
-import "github.com/notes/zeshion/model"
+import "github.com/OneNoted/zeshion/model"
 
 func defaultConfigStrategy(s *RealStartup, session model.SeshSession) (string, error) {
 	if session.DisableStartupCommand {

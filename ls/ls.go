@@ -1,8 +1,8 @@
 package ls
 
 import (
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/shell"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/shell"
 )
 
 type Ls interface {

@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/notes/zeshion/execwrap"
-	"github.com/notes/zeshion/home"
+	"github.com/OneNoted/zeshion/execwrap"
+	"github.com/OneNoted/zeshion/home"
 )
 
 type Shell interface {

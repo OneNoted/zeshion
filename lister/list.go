@@ -4,7 +4,7 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 type (

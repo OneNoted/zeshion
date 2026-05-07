@@ -3,7 +3,7 @@ package connector
 import (
 	"fmt"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func tmuxinatorStrategy(c *RealConnector, name string) (model.Connection, error) {

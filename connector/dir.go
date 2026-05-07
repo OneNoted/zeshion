@@ -1,7 +1,7 @@
 package connector
 
 import (
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func dirStrategy(c *RealConnector, name string) (model.Connection, error) {

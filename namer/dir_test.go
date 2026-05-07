@@ -3,10 +3,10 @@ package namer
 import (
 	"testing"
 
-	"github.com/notes/zeshion/git"
-	"github.com/notes/zeshion/home"
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/pathwrap"
+	"github.com/OneNoted/zeshion/git"
+	"github.com/OneNoted/zeshion/home"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/pathwrap"
 	"github.com/stretchr/testify/assert"
 )
 

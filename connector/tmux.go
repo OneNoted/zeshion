@@ -1,8 +1,8 @@
 package connector
 
 import (
-	"github.com/notes/zeshion/model"
-	"github.com/notes/zeshion/tmux"
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/tmux"
 )
 
 func tmuxStrategy(c *RealConnector, name string) (model.Connection, error) {

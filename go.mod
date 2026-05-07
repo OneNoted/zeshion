@@ -1,4 +1,4 @@
-module github.com/notes/zeshion
+module github.com/OneNoted/zeshion
 
 go 1.25.0
 

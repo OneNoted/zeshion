@@ -3,7 +3,7 @@ package tmux
 import (
 	"fmt"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func (t *RealTmux) SwitchOrAttach(name string, opts model.ConnectOpts) (string, error) {

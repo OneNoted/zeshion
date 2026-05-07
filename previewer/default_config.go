@@ -1,9 +1,9 @@
 package previewer
 
 import (
-	"github.com/notes/zeshion/lister"
-	"github.com/notes/zeshion/ls"
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/lister"
+	"github.com/OneNoted/zeshion/ls"
+	"github.com/OneNoted/zeshion/model"
 )
 
 type DefaultConfigPreviewStrategy struct {

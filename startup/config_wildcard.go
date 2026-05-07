@@ -1,6 +1,6 @@
 package startup
 
-import "github.com/notes/zeshion/model"
+import "github.com/OneNoted/zeshion/model"
 
 func configWildcardStartupStrategy(s *RealStartup, session model.SeshSession) (string, error) {
 	wc, found := s.lister.FindConfigWildcard(session.Path)

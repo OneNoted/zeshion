@@ -1,6 +1,6 @@
 package lister
 
-import "github.com/notes/zeshion/model"
+import "github.com/OneNoted/zeshion/model"
 
 func exists(key string, sessions map[string]model.SeshSession) (model.SeshSession, bool) {
 	if session, exists := sessions[key]; exists {

@@ -6,7 +6,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 )
 
 const (

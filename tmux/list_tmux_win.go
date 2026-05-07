@@ -3,8 +3,8 @@ package tmux
 import (
 	"strings"
 
-	"github.com/notes/zeshion/convert"
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/convert"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func listWindowsFormat() string {

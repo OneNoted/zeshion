@@ -1,6 +1,6 @@
 package connector
 
-import "github.com/notes/zeshion/model"
+import "github.com/OneNoted/zeshion/model"
 
 func zoxideToTmuxName(c *RealConnector, path string) (string, error) {
 	fullPath, err := c.home.ExpandPath(path)

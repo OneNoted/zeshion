@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/notes/zeshion/lister"
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/lister"
+	"github.com/OneNoted/zeshion/model"
 )
 
 func NewConnectCommand(base *BaseDeps) *cobra.Command {

@@ -3,7 +3,7 @@ package configurator
 import (
 	"testing"
 
-	"github.com/notes/zeshion/model"
+	"github.com/OneNoted/zeshion/model"
 	"github.com/pelletier/go-toml/v2"
 	"github.com/stretchr/testify/assert"
 )

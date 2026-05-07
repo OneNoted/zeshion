@@ -3,7 +3,7 @@ package startup
 import (
 	"testing"
 
-	"github.com/notes/zeshion/oswrap"
+	"github.com/OneNoted/zeshion/oswrap"
 	"github.com/stretchr/testify/assert"
 )
 
