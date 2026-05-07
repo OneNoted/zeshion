@@ -86,11 +86,37 @@ Expected behavior:
 - Inside Zellij, selecting an existing Zellij session switches the active session.
 - `window` targets Zellij tabs.
 
+## Herdr Smoke
+
+From outside Herdr:
+
+```sh
+/tmp/zeshion --multiplexer herdr list --herdr
+/tmp/zeshion --multiplexer herdr window --session <workspace-id>
+```
+
+From inside a Herdr pane:
+
+```sh
+/tmp/zeshion --multiplexer auto list --herdr
+/tmp/zeshion --multiplexer herdr picker --herdr
+/tmp/zeshion --multiplexer herdr window
+```
+
+Expected behavior:
+
+- Auto mode selects Herdr.
+- Workspaces and tabs map to zeshion sessions and windows.
+- Duplicate workspace labels remain distinct in JSON and picker selection.
+- Duplicate tab labels require selecting the exact tab ID reported by `window --json`.
+- A configured session creates a workspace and runs its startup command once.
+
 ## Picker Sources
 
 ```sh
 /tmp/zeshion picker --tmux
 /tmp/zeshion picker --zellij
+/tmp/zeshion picker --herdr
 /tmp/zeshion picker --config
 /tmp/zeshion picker --zoxide
 /tmp/zeshion picker --config --zoxide --hide-duplicates

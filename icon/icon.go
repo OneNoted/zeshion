@@ -24,6 +24,8 @@ func NewIcon(config model.Config) Icon {
 var (
 	zoxideIcon     string = ""
 	tmuxIcon       string = ""
+	zellijIcon     string = ""
+	herdrIcon      string = "󰟐"
 	configIcon     string = ""
 	tmuxinatorIcon string = ""
 	tmuxPaneIcon   string = ""
@@ -37,11 +39,15 @@ type Glyph struct {
 
 // Glyphs maps session source names to their icon and color.
 var Glyphs = map[string]Glyph{
-	"tmux":       {Icon: tmuxIcon, ColorCode: 34},
-	"config":     {Icon: configIcon, ColorCode: 90},
-	"zoxide":     {Icon: zoxideIcon, ColorCode: 36},
-	"tmuxinator": {Icon: tmuxinatorIcon, ColorCode: 33},
-	"tmux-pane":  {Icon: tmuxPaneIcon, ColorCode: 32},
+	"tmux":        {Icon: tmuxIcon, ColorCode: 34},
+	"zellij":      {Icon: zellijIcon, ColorCode: 35},
+	"herdr":       {Icon: herdrIcon, ColorCode: 33},
+	"config":      {Icon: configIcon, ColorCode: 90},
+	"zoxide":      {Icon: zoxideIcon, ColorCode: 36},
+	"tmuxinator":  {Icon: tmuxinatorIcon, ColorCode: 33},
+	"tmux-pane":   {Icon: tmuxPaneIcon, ColorCode: 32},
+	"zellij-pane": {Icon: zellijIcon, ColorCode: 35},
+	"herdr-pane":  {Icon: herdrIcon, ColorCode: 33},
 }
 
 func ansiString(code int, s string) string {
@@ -63,8 +69,10 @@ func (i *RealIcon) AddIconNoColor(s model.SeshSession) string {
 }
 
 func (i *RealIcon) RemoveIcon(name string) string {
-	if strings.HasPrefix(name, tmuxIcon) || strings.HasPrefix(name, zoxideIcon) || strings.HasPrefix(name, configIcon) || strings.HasPrefix(name, tmuxinatorIcon) || strings.HasPrefix(name, tmuxPaneIcon) {
-		return name[4:]
+	for _, glyph := range Glyphs {
+		if rest, found := strings.CutPrefix(name, glyph.Icon); found {
+			return strings.TrimPrefix(rest, " ")
+		}
 	}
 	return name
 }

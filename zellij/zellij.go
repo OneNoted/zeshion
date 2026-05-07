@@ -44,7 +44,7 @@ func (z *Zellij) ListSessions() ([]*model.TmuxSession, error) {
 		if name == "" {
 			continue
 		}
-		sessions = append(sessions, &model.TmuxSession{Name: name})
+		sessions = append(sessions, &model.TmuxSession{ID: name, Name: name})
 	}
 	return sessions, nil
 }
@@ -88,6 +88,7 @@ func (z *Zellij) ListWindows(targetSession string) ([]*model.TmuxWindow, error) 
 			index = tab.TabID
 		}
 		windows = append(windows, &model.TmuxWindow{
+			ID:     fmt.Sprint(tab.TabID),
 			Index:  index,
 			Name:   tab.Name,
 			Active: tab.Active,

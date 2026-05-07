@@ -189,7 +189,6 @@ func TestCachingLister_HideAttached_ColdStart(t *testing.T) {
 	sessions := sessionsWithAttached()
 	// Inner is always called with empty opts (cache stores full list)
 	inner.On("List", lister.ListOptions{}).Return(sessions, nil).Once()
-	inner.On("GetAttachedTmuxSession").Return(sessions.Directory["tmux:main"], true)
 
 	cl := lister.NewCachingLister(inner, fc)
 	got, err := cl.List(lister.ListOptions{Tmux: true, HideAttached: true})
@@ -204,24 +203,46 @@ func TestCachingLister_HideAttached_ColdStart(t *testing.T) {
 
 	cl.Wait()
 }
+func TestCachingLister_HideAttached_RemovesEveryAttachedSession(t *testing.T) {
+	dir := t.TempDir()
+	fc := cache.NewFileCacheWithPath(filepath.Join(dir, "sessions.gob"))
+	inner := lister.NewMockLister(t)
+
+	sessions := sessionsWithAttached()
+	dev := sessions.Directory["tmux:dev"]
+	dev.Attached = 1
+	sessions.Directory["tmux:dev"] = dev
+	inner.On("List", lister.ListOptions{}).Return(sessions, nil).Once()
+
+	cl := lister.NewCachingLister(inner, fc)
+	got, err := cl.List(lister.ListOptions{Tmux: true, HideAttached: true})
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"tmux:work"}, got.OrderedIndex)
+}
 
 func TestCachingLister_HideAttached_WarmHit(t *testing.T) {
 	dir := t.TempDir()
 	fc := cache.NewFileCacheWithPath(filepath.Join(dir, "sessions.gob"))
 	inner := lister.NewMockLister(t)
 
-	sessions := sessionsWithAttached()
-	require.NoError(t, fc.Write(sessions))
-
-	inner.On("GetAttachedTmuxSession").Return(sessions.Directory["tmux:main"], true)
+	cached := sessionsWithAttached()
+	require.NoError(t, fc.Write(cached))
+	live := sessionsWithAttached()
+	liveMain := live.Directory["tmux:main"]
+	liveMain.Attached = 0
+	live.Directory["tmux:main"] = liveMain
+	liveDev := live.Directory["tmux:dev"]
+	liveDev.Attached = 1
+	live.Directory["tmux:dev"] = liveDev
+	inner.On("List", lister.ListOptions{}).Return(live, nil).Once()
 
 	cl := lister.NewCachingLister(inner, fc)
 	got, err := cl.List(lister.ListOptions{Tmux: true, HideAttached: true})
 	require.NoError(t, err)
-	assert.Equal(t, []string{"tmux:dev", "tmux:work"}, got.OrderedIndex)
+	assert.Equal(t, []string{"tmux:main", "tmux:work"}, got.OrderedIndex)
 
 	cl.Wait()
-	inner.AssertNotCalled(t, "List")
 }
 
 func TestCachingLister_HideAttached_NoAttachedSession(t *testing.T) {
@@ -231,8 +252,7 @@ func TestCachingLister_HideAttached_NoAttachedSession(t *testing.T) {
 
 	sessions := fakeSessions()
 	require.NoError(t, fc.Write(sessions))
-
-	inner.On("GetAttachedTmuxSession").Return(model.SeshSession{}, false)
+	inner.On("List", lister.ListOptions{}).Return(sessions, nil).Once()
 
 	cl := lister.NewCachingLister(inner, fc)
 	got, err := cl.List(lister.ListOptions{Tmux: true, HideAttached: true})
@@ -240,6 +260,35 @@ func TestCachingLister_HideAttached_NoAttachedSession(t *testing.T) {
 	// Nothing filtered since no session is attached
 	assert.Equal(t, sessions.OrderedIndex, got.OrderedIndex)
 
+	cl.Wait()
+}
+
+func TestCachingLister_HideAttachedUsesLiveHerdrWorkspaceID(t *testing.T) {
+	dir := t.TempDir()
+	fc := cache.NewFileCacheWithPath(filepath.Join(dir, "sessions.gob"))
+	inner := lister.NewMockLister(t)
+	cached := model.SeshSessions{
+		OrderedIndex: []string{"herdr:w1", "herdr:w2"},
+		Directory: model.SeshSessionMap{
+			"herdr:w1": {ID: "w1", Src: "herdr", Name: "repo", Attached: 1},
+			"herdr:w2": {ID: "w2", Src: "herdr", Name: "repo"},
+		},
+	}
+	require.NoError(t, fc.Write(cached))
+	live := model.SeshSessions{
+		OrderedIndex: []string{"herdr:w1", "herdr:w2"},
+		Directory: model.SeshSessionMap{
+			"herdr:w1": {ID: "w1", Src: "herdr", Name: "repo"},
+			"herdr:w2": {ID: "w2", Src: "herdr", Name: "repo", Attached: 1},
+		},
+	}
+	inner.On("List", lister.ListOptions{}).Return(live, nil).Once()
+
+	cl := lister.NewCachingLister(inner, fc)
+	got, err := cl.List(lister.ListOptions{Herdr: true, HideAttached: true})
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"herdr:w1"}, got.OrderedIndex)
 	cl.Wait()
 }
 

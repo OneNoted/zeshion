@@ -90,6 +90,11 @@ func (s *RealStartup) Exec(session model.SeshSession) (string, error) {
 		}
 	}
 
+	targetSession := session.Name
+	if session.ID != "" {
+		targetSession = session.ID
+	}
+
 	for _, window := range session.WindowNames {
 		windowConfig, ok := windows[lister.ConfigKey(window)]
 		if !ok {
@@ -106,12 +111,12 @@ func (s *RealStartup) Exec(session model.SeshSession) (string, error) {
 		// Inject the window's startup_script as its initial shell-command so
 		// it runs reliably regardless of shell-init speed (issue #188).
 		wrapped := s.WrapForShell(windowConfig.StartupScript)
-		if ret, err := s.tmux.NewWindowInSession(windowConfig.Name, windowConfig.Path, session.Name, wrapped); err != nil {
+		if ret, err := s.tmux.NewWindowInSession(windowConfig.Name, windowConfig.Path, targetSession, wrapped); err != nil {
 			return ret, err
 		}
 	}
 	if len(session.WindowNames) > 0 {
-		if _, err := s.tmux.SelectWindow(session.Name + ":^"); err != nil {
+		if _, err := s.tmux.SelectWindow(targetSession + ":^"); err != nil {
 			return "", err
 		}
 	}

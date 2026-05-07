@@ -27,10 +27,9 @@ func connectToMux(c *RealConnector, connection model.Connection, opts model.Conn
 }
 
 func connectWith(c *RealConnector, target tmux.Tmux, connection model.Connection, opts model.ConnectOpts) (string, error) {
+	targetSession := connection.Session.Name
 	if connection.New {
-		// Resolve the startup command BEFORE creating the session so we can
-		// inject it as the pane's initial shell-command. This eliminates the
-		// send-keys race with slow shell init
+		// Resolve the startup command before creation so the first pane receives it atomically.
 		var rawCmd string
 		if opts.Command != "" {
 			rawCmd = opts.Command
@@ -41,15 +40,26 @@ func connectWith(c *RealConnector, target tmux.Tmux, connection model.Connection
 			}
 			rawCmd = resolved
 		}
-		shellCmd := c.startup.WrapForShell(rawCmd)
-		if _, err := target.NewSession(connection.Session.Name, connection.Session.Path, shellCmd); err != nil {
+		shellCmd := rawCmd
+		if target != c.herdr {
+			shellCmd = c.startup.WrapForShell(rawCmd)
+		}
+		createdID, err := target.NewSession(connection.Session.Name, connection.Session.Path, shellCmd)
+		if err != nil {
 			return "", err
 		}
+		if createdID != "" {
+			targetSession = createdID
+		}
 		if opts.Command == "" {
-			if _, err := c.startup.Exec(connection.Session); err != nil {
+			startupSession := connection.Session
+			startupSession.ID = createdID
+			if _, err := c.startup.Exec(startupSession); err != nil {
 				return "", err
 			}
 		}
+	} else if connection.Session.ID != "" {
+		targetSession = connection.Session.ID
 	}
-	return target.SwitchOrAttach(connection.Session.Name, opts)
+	return target.SwitchOrAttach(targetSession, opts)
 }

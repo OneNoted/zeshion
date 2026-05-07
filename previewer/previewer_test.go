@@ -63,6 +63,7 @@ func (suite *PreviewerTestSuite) initializePreviewer() {
 	suite.previewer = NewPreviewer(
 		suite.mockLister,
 		suite.mockTmux,
+		"tmux",
 		suite.mockIcon,
 		suite.mockDir,
 		suite.mockHome,

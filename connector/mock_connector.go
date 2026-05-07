@@ -77,6 +77,63 @@ func (_c *MockConnector_Connect_Call) RunAndReturn(run func(string, model.Connec
 	return _c
 }
 
+// ConnectSession provides a mock function with given fields: session, opts
+func (_m *MockConnector) ConnectSession(session model.SeshSession, opts model.ConnectOpts) (string, error) {
+	ret := _m.Called(session, opts)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ConnectSession")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(model.SeshSession, model.ConnectOpts) (string, error)); ok {
+		return rf(session, opts)
+	}
+	if rf, ok := ret.Get(0).(func(model.SeshSession, model.ConnectOpts) string); ok {
+		r0 = rf(session, opts)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(model.SeshSession, model.ConnectOpts) error); ok {
+		r1 = rf(session, opts)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockConnector_ConnectSession_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ConnectSession'
+type MockConnector_ConnectSession_Call struct {
+	*mock.Call
+}
+
+// ConnectSession is a helper method to define mock.On call
+//   - session model.SeshSession
+//   - opts model.ConnectOpts
+func (_e *MockConnector_Expecter) ConnectSession(session interface{}, opts interface{}) *MockConnector_ConnectSession_Call {
+	return &MockConnector_ConnectSession_Call{Call: _e.mock.On("ConnectSession", session, opts)}
+}
+
+func (_c *MockConnector_ConnectSession_Call) Run(run func(session model.SeshSession, opts model.ConnectOpts)) *MockConnector_ConnectSession_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(model.SeshSession), args[1].(model.ConnectOpts))
+	})
+	return _c
+}
+
+func (_c *MockConnector_ConnectSession_Call) Return(_a0 string, _a1 error) *MockConnector_ConnectSession_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockConnector_ConnectSession_Call) RunAndReturn(run func(model.SeshSession, model.ConnectOpts) (string, error)) *MockConnector_ConnectSession_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockConnector creates a new instance of MockConnector. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockConnector(t interface {

@@ -7,8 +7,17 @@ import (
 	"github.com/OneNoted/zeshion/model"
 )
 
-func tmuxPaneKey(windowName string, paneID string) string {
-	return fmt.Sprintf("tmux-pane:%s/%s", windowName, paneID)
+func paneSource(muxName string) string {
+	switch muxName {
+	case "zellij", "herdr":
+		return muxName + "-pane"
+	default:
+		return "tmux-pane"
+	}
+}
+
+func paneKey(source, windowName, paneID string) string {
+	return fmt.Sprintf("%s:%s/%s", source, windowName, paneID)
 }
 
 func tmuxPaneDisplayName(pane *model.TmuxPane) string {
@@ -24,6 +33,7 @@ func listTmuxPanes(l *RealLister) (model.SeshSessions, error) {
 	if err != nil {
 		return model.SeshSessions{}, fmt.Errorf("couldn't list tmux panes: %q", err)
 	}
+	source := paneSource(l.muxName)
 
 	// Count raw names to detect duplicates needing .0, .1 suffixes
 	type paneEntry struct {
@@ -50,10 +60,11 @@ func listTmuxPanes(l *RealLister) (model.SeshSessions, error) {
 			nameIndexes[entry.rawName] = idx + 1
 		}
 
-		key := tmuxPaneKey(entry.pane.WindowName, entry.pane.PaneID)
+		key := paneKey(source, entry.pane.WindowName, entry.pane.PaneID)
 		orderedIndex = append(orderedIndex, key)
 		directory[key] = model.SeshSession{
-			Src:  "tmux-pane",
+			ID:   entry.pane.PaneID,
+			Src:  source,
 			Name: name,
 			Path: entry.pane.PanePath,
 		}

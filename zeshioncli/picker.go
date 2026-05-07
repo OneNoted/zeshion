@@ -25,6 +25,7 @@ func NewPickerCommand(base *BaseDeps) *cobra.Command {
 			config, _ := cmd.Flags().GetBool("config")
 			tmux, _ := cmd.Flags().GetBool("tmux")
 			zellij, _ := cmd.Flags().GetBool("zellij")
+			herdr, _ := cmd.Flags().GetBool("herdr")
 			zoxide, _ := cmd.Flags().GetBool("zoxide")
 			hideAttached, _ := cmd.Flags().GetBool("hide-attached")
 			tmuxinator, _ := cmd.Flags().GetBool("tmuxinator")
@@ -35,6 +36,7 @@ func NewPickerCommand(base *BaseDeps) *cobra.Command {
 				HideAttached:   hideAttached,
 				Tmux:           tmux,
 				Zellij:         zellij,
+				Herdr:          herdr,
 				Zoxide:         zoxide,
 				Tmuxinator:     tmuxinator,
 				HideDuplicates: hideDuplicates,
@@ -73,11 +75,11 @@ func NewPickerCommand(base *BaseDeps) *cobra.Command {
 				return err
 			}
 
-			if chosen == "" {
+			if chosen.Name == "" {
 				return nil
 			}
 
-			if _, err := deps.Connector.Connect(chosen, model.ConnectOpts{}); err != nil {
+			if _, err := deps.Connector.ConnectSession(chosen, model.ConnectOpts{}); err != nil {
 				return err
 			}
 
@@ -89,6 +91,7 @@ func NewPickerCommand(base *BaseDeps) *cobra.Command {
 	cmd.Flags().BoolP("tmux", "t", false, "show tmux sessions")
 	cmd.Flags().BoolP("zellij", "Z", false, "show zellij sessions")
 	cmd.Flags().BoolP("zoxide", "z", false, "show zoxide results")
+	cmd.Flags().Bool("herdr", false, "show Herdr workspaces")
 	cmd.Flags().BoolP("hide-attached", "H", false, "don't show currently attached sessions")
 	cmd.Flags().BoolP("icons", "i", false, "show icons")
 	cmd.Flags().BoolP("tmuxinator", "T", false, "show tmuxinator configs")

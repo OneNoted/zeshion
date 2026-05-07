@@ -23,6 +23,7 @@ func listZellij(l *RealLister) (model.SeshSessions, error) {
 		key := zellijKey(session.Name)
 		orderedIndex = append(orderedIndex, key)
 		directory[key] = model.SeshSession{
+			ID:       session.ID,
 			Src:      "zellij",
 			Name:     session.Name,
 			Path:     session.Path,

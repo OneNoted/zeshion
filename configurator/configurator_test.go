@@ -70,6 +70,20 @@ func (o *testOs) Stat(name string) (os.FileInfo, error) {
 	return nil, &os.PathError{Op: "stat", Path: name, Err: os.ErrNotExist}
 }
 
+func TestParseConfigFileAcceptsHerdrSettingsInStrictMode(t *testing.T) {
+	config, err := (&RealConfigurator{}).parseConfigFile([]byte(`
+strict_mode = true
+multiplexer = "herdr"
+herdr_command = "/usr/local/bin/herdr"
+herdr_session = "agents"
+`))
+
+	require.NoError(t, err)
+	assert.Equal(t, "herdr", config.Multiplexer)
+	assert.Equal(t, "/usr/local/bin/herdr", config.HerdrCommand)
+	assert.Equal(t, "agents", config.HerdrSession)
+}
+
 func testdataPath(name string) string {
 	abs, _ := filepath.Abs(filepath.Join("testdata", name))
 	return abs

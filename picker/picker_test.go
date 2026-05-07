@@ -15,7 +15,7 @@ import (
 
 func testSessions() model.SeshSessions {
 	dir := model.SeshSessionMap{
-		"s1": {Name: "my-project", Src: "tmux", Path: "/home/user/my-project"},
+		"s1": {ID: "w1", Name: "my-project", Src: "herdr", Path: "/home/user/my-project"},
 		"s2": {Name: "dotfiles", Src: "config", Path: "/home/user/dotfiles"},
 		"s3": {Name: "~/code/app", Src: "zoxide", Path: "/home/user/code/app"},
 		"s4": {Name: "rails-app", Src: "tmuxinator", Path: "/home/user/rails-app"},
@@ -46,7 +46,7 @@ func TestNew(t *testing.T) {
 	assert.Len(t, m.allItems, 5)
 	assert.Len(t, m.filtered, 5)
 	assert.Equal(t, 0, m.cursor)
-	assert.Equal(t, "", m.chosen)
+	assert.Zero(t, m.chosen)
 	assert.False(t, m.quit)
 	assert.False(t, m.loading)
 }
@@ -109,6 +109,29 @@ func TestApplyFilter_NoMatches(t *testing.T) {
 	m.applyFilter()
 
 	assert.Len(t, m.filtered, 0)
+}
+
+func TestBuildItemsDisambiguatesDuplicateHerdrLabels(t *testing.T) {
+	sessions := model.SeshSessions{
+		OrderedIndex: []string{"herdr:w1", "herdr:w2"},
+		Directory: model.SeshSessionMap{
+			"herdr:w1": {ID: "w1", Src: "herdr", Name: "repo", Path: "/work/one"},
+			"herdr:w2": {ID: "w2", Src: "herdr", Name: "repo", Path: "/work/two"},
+		},
+	}
+
+	items := buildItems(sessions, false)
+	assert.Equal(t, "repo (w1)", items[0].displayName)
+	assert.Equal(t, "repo (w2)", items[1].displayName)
+	assert.Contains(t, items[0].searchName, "w1")
+
+	m := New(testFetchFunc(sessions), false, false, "> ", "Filter sessions...")
+	result, _ := m.Update(sessionsLoadedMsg{sessions: sessions})
+	m = result.(Model)
+	m.filterInput.SetValue("w2")
+	m.applyFilter()
+	assert.Len(t, m.filtered, 1)
+	assert.Equal(t, "w2", m.filtered[0].item.session.ID)
 }
 
 func TestCursorDown(t *testing.T) {
@@ -180,13 +203,15 @@ func TestUpdate_Enter_ReturnsRawName(t *testing.T) {
 	m := newTestModel()
 	m.height = 30
 
-	// Select the first item (tmux source "my-project")
+	// Select the first item (Herdr workspace "my-project").
 	result, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyEnter})
 	resultModel := result.(Model)
 
 	// Chosen should be the raw session name with no icon prefix
 	assert.Equal(t, "my-project", resultModel.Chosen())
 	assert.False(t, strings.HasPrefix(resultModel.Chosen(), "\033"), "Chosen() should not contain ANSI escape codes")
+	assert.Equal(t, "w1", resultModel.ChosenSession().ID)
+	assert.Equal(t, "herdr", resultModel.ChosenSession().Src)
 }
 
 func TestUpdate_Enter_EmptyList(t *testing.T) {

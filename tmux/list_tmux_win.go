@@ -40,6 +40,7 @@ func parseTmuxWindowsOutput(rawList []string) ([]*model.TmuxWindow, error) {
 			continue
 		}
 		windows = append(windows, &model.TmuxWindow{
+			ID:     fields[0],
 			Index:  convert.StringToInt(fields[0]),
 			Name:   fields[1],
 			Path:   fields[2],

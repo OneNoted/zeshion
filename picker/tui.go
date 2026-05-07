@@ -15,10 +15,11 @@ import (
 )
 
 type sessionItem struct {
-	session    model.SeshSession
-	name       string // raw session name (no icons/ANSI)
-	searchName string // normalized name used for fuzzy matching
-	src        string // source type (tmux, config, zoxide, tmuxinator)
+	session     model.SeshSession
+	name        string // raw session name (no icons/ANSI)
+	displayName string
+	searchName  string // normalized display name used for fuzzy matching
+	src         string // source type (tmux, zellij, herdr, config, zoxide, tmuxinator)
 }
 
 // sessionItems implements fuzzy.Source for fuzzy matching.
@@ -49,7 +50,7 @@ type Model struct {
 	offset         int
 	width          int
 	height         int
-	chosen         string
+	chosen         model.SeshSession
 	quit           bool
 	showIcons      bool
 	separatorAware bool
@@ -83,18 +84,36 @@ func normalizeSeparators(s string) string {
 }
 
 func buildItems(sessions model.SeshSessions, separatorAware bool) sessionItems {
+	nameCounts := make(map[string]int, len(sessions.OrderedIndex))
+	for _, key := range sessions.OrderedIndex {
+		session := sessions.Directory[key]
+		nameCounts[session.Src+"\x00"+session.Name]++
+	}
+
 	items := make(sessionItems, 0, len(sessions.OrderedIndex))
 	for _, key := range sessions.OrderedIndex {
-		s := sessions.Directory[key]
-		searchName := s.Name
+		session := sessions.Directory[key]
+		displayName := session.Name
+		if nameCounts[session.Src+"\x00"+session.Name] > 1 {
+			discriminator := session.ID
+			if discriminator == "" {
+				discriminator = session.Path
+			}
+			if discriminator == "" {
+				discriminator = key
+			}
+			displayName = fmt.Sprintf("%s (%s)", session.Name, discriminator)
+		}
+		searchName := displayName
 		if separatorAware {
-			searchName = normalizeSeparators(s.Name)
+			searchName = normalizeSeparators(displayName)
 		}
 		items = append(items, sessionItem{
-			session:    s,
-			name:       s.Name,
-			searchName: searchName,
-			src:        s.Src,
+			session:     session,
+			name:        session.Name,
+			displayName: displayName,
+			searchName:  searchName,
+			src:         session.Src,
 		})
 	}
 	return items
@@ -153,7 +172,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			if len(m.filtered) > 0 {
 				selected := m.filtered[m.cursor]
-				m.chosen = selected.item.name
+				m.chosen = selected.item.session
 			}
 			return m, tea.Quit
 
@@ -309,9 +328,10 @@ func (m Model) View() tea.View {
 				iconStyle := lipgloss.NewStyle().Foreground(clr)
 				tag = iconStyle.Render(icn)
 			}
-			name := highlightMatches(item.item.name, item.matchedIndexes, matchStyle, normalStyle)
+			name := highlightMatches(item.item.displayName, item.matchedIndexes, matchStyle, normalStyle)
 
-			b.WriteString(fmt.Sprintf("%s%s%s\n", prefix, tag, name))
+			sourceStyle := lipgloss.NewStyle().Faint(true)
+			b.WriteString(fmt.Sprintf("%s%s%s%s\n", prefix, tag, name, sourceStyle.Render(" ["+item.item.src+"]")))
 		}
 
 		// Pad remaining visible lines
@@ -348,7 +368,8 @@ func highlightMatches(s string, indexes []int, matchStyle, normalStyle lipgloss.
 	return result.String()
 }
 
-func (m Model) Chosen() string { return m.chosen }
-func (m Model) Quit() bool     { return m.quit }
-func (m Model) LoadErr() error { return m.loadErr }
-func (m Model) Loading() bool  { return m.loading }
+func (m Model) Chosen() string                   { return m.chosen.Name }
+func (m Model) ChosenSession() model.SeshSession { return m.chosen }
+func (m Model) Quit() bool                       { return m.quit }
+func (m Model) LoadErr() error                   { return m.loadErr }
+func (m Model) Loading() bool                    { return m.loading }

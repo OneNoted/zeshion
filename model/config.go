@@ -16,6 +16,8 @@ type (
 		Multiplexer          string               `toml:"multiplexer"`
 		TmuxCommand          string               `toml:"tmux_command"`
 		ZellijCommand        string               `toml:"zellij_command"`
+		HerdrCommand         string               `toml:"herdr_command"`
+		HerdrSession         string               `toml:"herdr_session"`
 		TUI                  TUIConfig            `toml:"tui"`
 	}
 	Evaluation struct {

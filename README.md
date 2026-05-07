@@ -1,6 +1,6 @@
 # zeshion
 
-`zeshion` is a session manager for tmux and Zellij. It keeps the `sesh` command shape where practical, while making the selected multiplexer explicit and supporting both tmux sessions and Zellij sessions from one CLI.
+`zeshion` is a session manager for tmux, Zellij, and Herdr. It keeps the `sesh` command shape where practical while mapping sessions and windows onto each multiplexer's native model.
 
 The project is derived from the MIT-licensed [`joshmedeski/sesh`](https://github.com/joshmedeski/sesh) codebase.
 
@@ -39,6 +39,7 @@ alias sesh=zeshion
 - Go 1.25 or newer to build from source.
 - `tmux` for tmux session management.
 - `zellij` for Zellij session management.
+- `herdr` for Herdr workspace management.
 - `zoxide` for zoxide-backed directory sessions.
 - A picker-compatible terminal for `zeshion picker`.
 
@@ -50,6 +51,7 @@ Most commands follow the `sesh` shape:
 zeshion list
 zeshion list --tmux
 zeshion list --zellij
+zeshion list --herdr
 zeshion list --config --zoxide
 zeshion connect my-session
 zeshion connect --root "$PWD"
@@ -79,31 +81,36 @@ Aliases are preserved where practical:
 
 Auto mode chooses:
 
-1. Zellij when running inside Zellij.
-2. tmux when running inside tmux.
-3. The `multiplexer` value from config.
-4. tmux as the compatibility fallback.
+1. Herdr when running inside a Herdr pane.
+2. Zellij when running inside Zellij.
+3. tmux when running inside tmux.
+4. The `multiplexer` value from config.
+5. tmux as the compatibility fallback.
 
 Override the multiplexer per command:
 
 ```sh
 zeshion --multiplexer tmux list
 zeshion --multiplexer zellij list
+zeshion --multiplexer herdr list
 zeshion --multiplexer zellij connect my-session
 ```
 
-## tmux And Zellij Behavior
+## Multiplexer Behavior
 
-| Action | tmux | Zellij |
-| --- | --- | --- |
-| List live sessions | `tmux list-sessions` | `zellij list-sessions` |
-| Connect outside a session | Attach to the tmux session | Attach to the Zellij session in the current terminal |
-| Connect inside a session | Switch tmux client | Switch Zellij session |
-| Create session | New tmux session | Zellij attach/create flow |
-| Window command | tmux windows | Zellij tabs |
-| tmuxinator/tmuxp | tmux-only path | Not used for native Zellij sessions |
+| Action | tmux | Zellij | Herdr |
+| --- | --- | --- | --- |
+| zeshion session | Session | Session | Workspace |
+| zeshion window | Window | Tab | Tab |
+| List live sessions | `tmux list-sessions` | `zellij list-sessions` | `herdr api snapshot` |
+| Connect outside a session | Attach | Attach in the current terminal | Focus the workspace, then attach the Herdr UI |
+| Connect inside a session | Switch client | Switch session | Focus workspace |
+| Create session | New session | Attach/create flow | Create workspace and run startup command in its root pane |
+| tmuxinator/tmuxp | Supported | Not used | Not used |
 
-For Zellij, the important rule is simple: outside Zellij, selecting a Zellij session opens that session in the current terminal; inside Zellij, selecting a Zellij session switches the active Zellij session.
+Herdr workspace and tab IDs are retained internally. The picker therefore selects the exact workspace even when multiple workspaces share a label. A direct `zeshion connect <name>` requires the label or derived directory name to be unique; use the workspace ID from `zeshion list --herdr --json` otherwise. `zeshion window` likewise accepts a tab ID from its JSON output and reports duplicate tab labels instead of selecting one arbitrarily.
+
+`zeshion last` is unavailable for Herdr because Herdr 0.8 does not expose previous-workspace history. Herdr panes can be listed, but Herdr 0.8 does not expose direct pane-ID focus through its CLI, so selecting a pane is not supported.
 
 ## Picker
 
@@ -118,9 +125,12 @@ Filter the picker input sources:
 ```sh
 zeshion picker --tmux
 zeshion picker --zellij
+zeshion picker --herdr
 zeshion picker --config --zoxide
 zeshion picker --hide-duplicates
 ```
+
+Every picker row includes its source, such as `[tmux]`, `[zellij]`, or `[herdr]`.
 
 Customize picker text:
 
@@ -144,6 +154,9 @@ Minimal config:
 multiplexer = "auto"
 tmux_command = "tmux"
 zellij_command = "zellij"
+herdr_command = "herdr"
+# Optional named Herdr server session used when outside Herdr.
+herdr_session = ""
 
 [default_session]
 startup_command = "nvim"
@@ -162,9 +175,9 @@ Use the JSON schema from `zeshion.schema.json`.
 From `sesh`:
 
 - Keep your existing `~/.config/sesh/sesh.toml`; `zeshion` will read it if no `zeshion` or `zesh` config exists.
-- Add `multiplexer = "auto"` or `multiplexer = "tmux"` if you want the choice to be explicit.
+- Add `multiplexer = "auto"`, `"tmux"`, `"zellij"`, or `"herdr"` when you want the choice to be explicit.
 - tmux-specific features such as tmuxinator stay on the tmux path.
-- Add `zellij_command = "zellij"` if you use a wrapper or custom Zellij binary name.
+- Set `zellij_command` or `herdr_command` if you use a wrapper or custom binary name.
 
 From pre-release `zesh`:
 
@@ -190,9 +203,10 @@ Use an explicit override while debugging:
 ```sh
 zeshion --multiplexer tmux list
 zeshion --multiplexer zellij list
+zeshion --multiplexer herdr list
 ```
 
-Then set `multiplexer = "tmux"` or `multiplexer = "zellij"` in config if you do not want auto-selection.
+Then set `multiplexer = "tmux"`, `"zellij"`, or `"herdr"` in config if you do not want auto-selection.
 
 **No config is found.**
 

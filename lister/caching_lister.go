@@ -2,7 +2,6 @@ package lister
 
 import (
 	"log/slog"
-	"slices"
 	"sync"
 	"time"
 
@@ -26,13 +25,25 @@ func NewCachingLister(inner Lister, c cache.Cache) *CachingLister {
 }
 
 // List implements Lister. It returns cached data when available, triggering a
-// background refresh when the cache is older than the soft TTL.
-// The cache always stores the full unfiltered list; source filters,
-// HideDuplicates, and HideAttached are applied after reading from cache.
+// background refresh when the cache is older than the soft TTL. HideAttached
+// bypasses the cache because attachment state is volatile.
+// The cache always stores the full unfiltered list.
 func (cl *CachingLister) List(opts ListOptions) (model.SeshSessions, error) {
 	// Always fetch/store the full list (all sources, no dedup, no hide);
 	// we apply all view-level filters ourselves after cache read.
 	innerOpts := ListOptions{}
+	// Attachment state is volatile and may change while the cached session list
+	// is fresh. HideAttached therefore requires a synchronous live listing.
+	if opts.HideAttached {
+		sessions, err := cl.inner.List(innerOpts)
+		if err != nil {
+			return sessions, err
+		}
+		if writeErr := cl.cache.Write(sessions); writeErr != nil {
+			slog.Warn("cache: write failed after live attachment refresh", "error", writeErr)
+		}
+		return cl.applyFilters(sessions, opts), nil
+	}
 
 	cached, err := cl.cache.Read()
 	if err == nil {
@@ -98,17 +109,16 @@ func (cl *CachingLister) applyFilters(sessions model.SeshSessions, opts ListOpti
 		filtered = filtered[:destIndex]
 	}
 
-	// 3. HideAttached: remove the currently attached tmux session.
+	// 3. HideAttached: this path receives live sessions because List bypasses
+	// cached data whenever attachment state affects the result.
 	if opts.HideAttached {
-		attached, ok := cl.inner.GetAttachedTmuxSession()
-		if ok {
-			for i, index := range filtered {
-				if sessions.Directory[index].Name == attached.Name {
-					filtered = slices.Delete(slices.Clone(filtered), i, i+1)
-					break
-				}
+		result := make([]string, 0, len(filtered))
+		for _, index := range filtered {
+			if sessions.Directory[index].Attached == 0 {
+				result = append(result, index)
 			}
 		}
+		filtered = result
 	}
 
 	if len(filtered) == len(sessions.OrderedIndex) {
@@ -123,7 +133,7 @@ func (cl *CachingLister) applyFilters(sessions model.SeshSessions, opts ListOpti
 // sourceSet returns a set of allowed source names based on opts, or nil if
 // no source flags are set (meaning all sources are allowed).
 func sourceSet(opts ListOptions) map[string]bool {
-	if !opts.Tmux && !opts.Zellij && !opts.Config && !opts.Zoxide && !opts.Tmuxinator && !opts.Panes {
+	if !opts.Tmux && !opts.Zellij && !opts.Herdr && !opts.Config && !opts.Zoxide && !opts.Tmuxinator && !opts.Panes {
 		return nil
 	}
 	m := make(map[string]bool)
@@ -132,6 +142,9 @@ func sourceSet(opts ListOptions) map[string]bool {
 	}
 	if opts.Zellij {
 		m["zellij"] = true
+	}
+	if opts.Herdr {
+		m["herdr"] = true
 	}
 	if opts.Config {
 		m["config"] = true
@@ -144,6 +157,8 @@ func sourceSet(opts ListOptions) map[string]bool {
 	}
 	if opts.Panes {
 		m["tmux-pane"] = true
+		m["zellij-pane"] = true
+		m["herdr-pane"] = true
 	}
 	return m
 }
@@ -188,9 +203,15 @@ func (cl *CachingLister) FindTmuxSession(name string) (model.SeshSession, bool) 
 func (cl *CachingLister) FindZellijSession(name string) (model.SeshSession, bool) {
 	return cl.inner.FindZellijSession(name)
 }
+func (cl *CachingLister) FindHerdrSession(name string) (model.SeshSession, bool, error) {
+	return cl.inner.FindHerdrSession(name)
+}
 
 func (cl *CachingLister) GetAttachedTmuxSession() (model.SeshSession, bool) {
 	return cl.inner.GetAttachedTmuxSession()
+}
+func (cl *CachingLister) GetAttachedHerdrSession() (model.SeshSession, bool) {
+	return cl.inner.GetAttachedHerdrSession()
 }
 
 func (cl *CachingLister) GetLastTmuxSession() (model.SeshSession, bool) {
