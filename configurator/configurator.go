@@ -13,7 +13,7 @@ import (
 )
 
 type Configurator interface {
-	GetConfig() (model.Config, error) // Since error is an interface, we use it here to return a single variable instead of multiple variables (configError holds 2 strings, human and err)
+	GetConfig() (model.Config, error)
 }
 
 type RealConfigurator struct {
@@ -23,18 +23,17 @@ type RealConfigurator struct {
 	configPath string
 }
 
-// Helper for consolidation of error into a single structure
 type ConfigError struct {
-	Err          string // Load the (DecodeError/StrictMissingError).Error() into this
-	HumanDetails string // Load the (DecodeError/StrictMissingError).String() into this
+	Err          string
+	HumanDetails string
 }
 
 func (ce *ConfigError) Error() string {
-	return ce.Err // Return the error
+	return ce.Err
 }
 
 func (ce *ConfigError) Human() string {
-	return ce.HumanDetails // Return the string
+	return ce.HumanDetails
 }
 
 func NewConfigurator(os oswrap.Os, path pathwrap.Path, runtime runtimewrap.Runtime) Configurator {
@@ -151,6 +150,24 @@ func (c *RealConfigurator) getConfigFileFromPath(configPath string) (model.Confi
 	return config, nil
 }
 
+func (c *RealConfigurator) readDefaultConfigFile(userConfigDir string) ([]byte, error) {
+	configFilePath := c.configFilePath(userConfigDir, "zesh")
+	if _, err := c.os.Stat(configFilePath); err == nil {
+		file, err := c.os.ReadFile(configFilePath)
+		if err != nil {
+			return nil, fmt.Errorf("couldn't read config file %q: %w", configFilePath, err)
+		}
+		return file, nil
+	}
+
+	configFilePath = c.configFilePath(userConfigDir, "sesh")
+	file, err := c.os.ReadFile(configFilePath)
+	if err != nil {
+		return nil, nil
+	}
+	return file, nil
+}
+
 func (c *RealConfigurator) getConfigFileFromUserConfigDir() (model.Config, error) {
 	userHomeDir, err := c.os.UserHomeDir()
 	if err != nil {
@@ -163,15 +180,10 @@ func (c *RealConfigurator) getConfigFileFromUserConfigDir() (model.Config, error
 		userConfigDir = c.path.Join(userHomeDir, ".config")
 	}
 
-	configFilePath := c.configFilePath(userConfigDir, "zesh")
-	if _, err := c.os.Stat(configFilePath); err != nil {
-		configFilePath = c.configFilePath(userConfigDir, "sesh")
+	file, err := c.readDefaultConfigFile(userConfigDir)
+	if err != nil {
+		return model.Config{}, err
 	}
-	file, _ := c.os.ReadFile(configFilePath)
-	// TODO: add to debugging logs (Update, added details string)
-	// if err != nil {
-	// 	return config, "", fmt.Errorf("couldn't read config file: %q", err)
-	// }
 
 	config, err := c.parseConfigFile(file)
 	if err != nil {

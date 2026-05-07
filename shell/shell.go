@@ -35,7 +35,6 @@ func (c *RealShell) Cmd(cmd string, args ...string) (string, error) {
 	command := exec.Command(foundCmd, args...)
 	command.Stdin = os.Stdin
 	command.Stdout = &stdout
-	command.Stderr = os.Stderr
 	command.Stderr = &stderr
 	if err := command.Start(); err != nil {
 		return "", err

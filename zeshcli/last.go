@@ -22,8 +22,7 @@ func NewLastCommand(base *BaseDeps) *cobra.Command {
 				lastSession, exists = deps.Lister.GetLastZellijSession()
 			}
 			if !exists {
-				// TODO: silently fail?
-				return fmt.Errorf("No last session found")
+				return fmt.Errorf("no last session found")
 			}
 			deps.Mux.SwitchClient(lastSession.Name)
 			return nil

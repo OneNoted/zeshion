@@ -215,6 +215,29 @@ func TestGetConfig_ZeshConfigTakesPrecedenceOverLegacySeshConfig(t *testing.T) {
 	assert.Equal(t, "zellij", config.Multiplexer)
 }
 
+func TestGetConfig_ReturnsReadErrorForSelectedZeshConfig(t *testing.T) {
+	mockOs := &testOs{
+		homeDir: "/home/testuser",
+		envVars: map[string]string{
+			"XDG_CONFIG_HOME": "/custom/config",
+		},
+		files: map[string][]byte{
+			"/custom/config/zesh/zesh.toml": nil,
+		},
+		readFileErr: map[string]error{
+			"/custom/config/zesh/zesh.toml": errors.New("permission denied"),
+		},
+	}
+	mockPath := pathwrap.NewPath()
+	mockRuntime := &runtimewrap.MockRunTime{}
+
+	c := NewConfigurator(mockOs, mockPath, mockRuntime)
+	_, err := c.GetConfig()
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), `couldn't read config file "/custom/config/zesh/zesh.toml"`)
+}
+
 func TestGetConfig_ImportPathWithEnvVar(t *testing.T) {
 	// Import path uses $VAR syntax — should be env-expanded via oswrap
 	importFile := testdataPath("sesh.toml")
