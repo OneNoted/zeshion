@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/OneNoted/zeshion/raw/main/zeshion.schema.json",
   "title": "zeshion configuration",
-  "description": "Configuration for zeshion, a smart tmux and Zellij session manager",
+  "description": "Configuration for zeshion, a tmux, Zellij, and Herdr session manager",
   "type": "object",
   "properties": {
     "cache": {
@@ -50,7 +50,7 @@
     "multiplexer": {
       "type": "string",
       "description": "Default multiplexer to use when the CLI does not override it",
-      "enum": ["auto", "tmux", "zellij"],
+      "enum": ["auto", "tmux", "zellij", "herdr"],
       "default": "auto"
     },
     "tmux_command": {
@@ -62,6 +62,16 @@
       "type": "string",
       "description": "Terminal multiplexer command to use instead of zellij",
       "default": "zellij"
+    },
+    "herdr_command": {
+      "type": "string",
+      "description": "Herdr command to use instead of herdr",
+      "default": "herdr"
+    },
+    "herdr_session": {
+      "type": "string",
+      "description": "Named Herdr server session to manage when running outside Herdr; empty selects Herdr's default session",
+      "default": ""
     },
     "tui": {
       "type": "object",

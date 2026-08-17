@@ -14,6 +14,7 @@ import (
 	"github.com/OneNoted/zeshion/dir"
 	"github.com/OneNoted/zeshion/execwrap"
 	"github.com/OneNoted/zeshion/git"
+	"github.com/OneNoted/zeshion/herdr"
 	"github.com/OneNoted/zeshion/home"
 	"github.com/OneNoted/zeshion/icon"
 	"github.com/OneNoted/zeshion/json"
@@ -56,6 +57,7 @@ type Deps struct {
 	BaseDeps
 	Config        model.Config
 	Tmux          tmux.Tmux
+	Herdr         tmux.Tmux
 	Mux           tmux.Tmux
 	MuxName       string
 	Lister        lister.Lister
@@ -113,14 +115,18 @@ func (b *BaseDeps) BuildAll(configPath string, muxOverride string) (*Deps, error
 
 	t := tmux.NewTmux(b.Os, b.Shell, config.TmuxCommand)
 	zj := zellij.NewZellij(b.Os, b.Shell, config.ZellijCommand)
+	h := herdr.NewHerdr(b.Os, b.Shell, config.HerdrCommand, config.HerdrSession)
 	muxName := selectMuxName(b.Os, muxOverride, config.Multiplexer)
 	var selectedMux tmux.Tmux = t
-	if muxName == "zellij" {
+	switch muxName {
+	case "zellij":
 		selectedMux = zj
+	case "herdr":
+		selectedMux = h
 	}
 
 	l := ls.NewLs(config, b.Shell)
-	li := lister.NewListerWithMux(config, b.Home, t, zj, selectedMux, b.Zoxide, b.Tmuxinator)
+	li := lister.NewListerWithMux(config, b.Home, t, zj, h, selectedMux, muxName, b.Zoxide, b.Tmuxinator)
 
 	var usedLister lister.Lister = li
 	var cachedLi *lister.CachingLister
@@ -132,9 +138,9 @@ func (b *BaseDeps) BuildAll(configPath string, muxOverride string) (*Deps, error
 
 	s := startup.NewStartup(b.Os, config, usedLister, selectedMux, b.Home, b.Replacer)
 	n := namer.NewNamer(b.Path, b.Git, b.Home, config)
-	c := connector.NewConnector(config, b.Dir, b.Home, usedLister, n, s, t, zj, selectedMux, muxName, b.Zoxide, b.Tmuxinator)
+	c := connector.NewConnector(config, b.Dir, b.Home, usedLister, n, s, t, zj, h, selectedMux, muxName, b.Zoxide, b.Tmuxinator)
 	ic := icon.NewIcon(config)
-	p := previewer.NewPreviewer(usedLister, selectedMux, ic, b.Dir, b.Home, l, config, b.Shell)
+	p := previewer.NewPreviewer(usedLister, selectedMux, muxName, ic, b.Dir, b.Home, l, config, b.Shell)
 	cl := cloner.NewCloner(c, b.Git)
 	pk := picker.NewPicker(config)
 
@@ -150,6 +156,7 @@ func (b *BaseDeps) BuildAll(configPath string, muxOverride string) (*Deps, error
 		Startup:       s,
 		Namer:         n,
 		Connector:     c,
+		Herdr:         h,
 		Icon:          ic,
 		Previewer:     p,
 		Cloner:        cl,
@@ -175,6 +182,9 @@ func buildDeps(cmd *cobra.Command, base *BaseDeps) (*Deps, error) {
 func selectMuxName(os oswrap.Os, override string, configured string) string {
 	choice := override
 	if choice == "" || choice == "auto" {
+		if os.Getenv("HERDR_ENV") == "1" || os.Getenv("HERDR_WORKSPACE_ID") != "" {
+			return "herdr"
+		}
 		if os.Getenv("ZELLIJ") != "" || os.Getenv("ZELLIJ_SESSION_NAME") != "" {
 			return "zellij"
 		}
@@ -183,11 +193,12 @@ func selectMuxName(os oswrap.Os, override string, configured string) string {
 		}
 		choice = configured
 	}
-	if choice == "" || choice == "auto" {
+	switch choice {
+	case "herdr":
+		return "herdr"
+	case "zellij":
+		return "zellij"
+	default:
 		return "tmux"
 	}
-	if choice == "zellij" {
-		return "zellij"
-	}
-	return "tmux"
 }

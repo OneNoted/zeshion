@@ -28,6 +28,7 @@ func NewListCommand(base *BaseDeps) *cobra.Command {
 			jsonOutput, _ := cmd.Flags().GetBool("json")
 			tmux, _ := cmd.Flags().GetBool("tmux")
 			zellij, _ := cmd.Flags().GetBool("zellij")
+			herdr, _ := cmd.Flags().GetBool("herdr")
 			zoxide, _ := cmd.Flags().GetBool("zoxide")
 			hideAttached, _ := cmd.Flags().GetBool("hide-attached")
 			icons, _ := cmd.Flags().GetBool("icons")
@@ -49,6 +50,7 @@ func NewListCommand(base *BaseDeps) *cobra.Command {
 				Json:           jsonOutput,
 				Tmux:           tmux,
 				Zellij:         zellij,
+				Herdr:          herdr,
 				Zoxide:         zoxide,
 				Tmuxinator:     tmuxinator,
 				HideDuplicates: hideDuplicates,
@@ -88,6 +90,7 @@ func NewListCommand(base *BaseDeps) *cobra.Command {
 	cmd.Flags().BoolP("json", "j", false, "output as json")
 	cmd.Flags().BoolP("tmux", "t", false, "show tmux sessions")
 	cmd.Flags().BoolP("zellij", "Z", false, "show zellij sessions")
+	cmd.Flags().Bool("herdr", false, "show Herdr workspaces")
 	cmd.Flags().BoolP("zoxide", "z", false, "show zoxide results")
 	cmd.Flags().BoolP("hide-attached", "H", false, "don't show currently attached sessions")
 	cmd.Flags().BoolP("icons", "i", false, "show icons")

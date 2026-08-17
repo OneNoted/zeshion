@@ -55,6 +55,20 @@ func TestListTmuxPanes(t *testing.T) {
 		assert.Equal(t, "tests/go", sessions.Directory["tmux-pane:tests/%2"].Name)
 	})
 
+	t.Run("should identify panes from the selected backend", func(t *testing.T) {
+		mockMux := new(tmux.MockTmux)
+		mockMux.On("ListTmuxPanes").Return([]*model.TmuxPane{
+			makeTmuxPane(0, "editor", 0, hostname, "vim", "/home/user/project", "w2:p1"),
+		}, nil)
+		realLister := &RealLister{mux: mockMux, muxName: "herdr"}
+
+		sessions, err := listTmuxPanes(realLister)
+
+		assert.NoError(t, err)
+		assert.Equal(t, []string{"herdr-pane:editor/w2:p1"}, sessions.OrderedIndex)
+		assert.Equal(t, "herdr-pane", sessions.Directory["herdr-pane:editor/w2:p1"].Src)
+	})
+
 	t.Run("should use pane title when explicitly set", func(t *testing.T) {
 		mockTmux := new(tmux.MockTmux)
 		mockTmux.On("ListTmuxPanes").Return([]*model.TmuxPane{

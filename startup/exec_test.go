@@ -27,12 +27,12 @@ func TestExecCreatesWindowsInTargetSession(t *testing.T) {
 		home:     mockHome,
 		replacer: mockReplacer,
 	}
-	session := model.SeshSession{Name: "demo", Path: "/tmp", WindowNames: []string{"editor"}}
+	session := model.SeshSession{ID: "$1", Name: "demo", Path: "/tmp", WindowNames: []string{"editor"}}
 
 	mockHome.On("ExpandPath", "/tmp").Return("/tmp", nil)
 	mockOs.On("Getenv", "SHELL").Return("/bin/zsh")
-	mockTmux.On("NewWindowInSession", "editor", "/tmp", "demo", `'/bin/zsh' -i -c 'echo hi'`).Return("", nil)
-	mockTmux.On("SelectWindow", "demo:^").Return("", nil)
+	mockTmux.On("NewWindowInSession", "editor", "/tmp", "$1", `'/bin/zsh' -i -c 'echo hi'`).Return("", nil)
+	mockTmux.On("SelectWindow", "$1:^").Return("", nil)
 	mockLister.On("FindConfigSession", "demo").Return(model.SeshSession{}, false)
 	mockLister.On("FindConfigWildcard", "/tmp").Return(model.WildcardConfig{}, false)
 

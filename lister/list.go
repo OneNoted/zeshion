@@ -1,7 +1,6 @@
 package lister
 
 import (
-	"slices"
 	"sync"
 
 	"github.com/OneNoted/zeshion/model"
@@ -16,6 +15,7 @@ type (
 		Json           bool
 		Tmux           bool
 		Zellij         bool
+		Herdr          bool
 		Zoxide         bool
 		Tmuxinator     bool
 		HideDuplicates bool
@@ -34,6 +34,7 @@ type strategyResult struct {
 var srcStrategies = map[string]srcStrategy{
 	"tmux":       listTmux,
 	"zellij":     listZellij,
+	"herdr":      listHerdr,
 	"config":     listConfig,
 	"tmuxinator": listTmuxinator,
 	"zoxide":     listZoxide,
@@ -113,13 +114,13 @@ func (l *RealLister) List(opts ListOptions) (model.SeshSessions, error) {
 	}
 
 	if opts.HideAttached {
-		attachedSession, _ := GetAttachedTmuxSession(l)
-		for i, index := range fullOrderedIndex {
-			if fullDirectory[index].Name == attachedSession.Name {
-				fullOrderedIndex = slices.Delete(fullOrderedIndex, i, i+1)
-				break
+		filtered := fullOrderedIndex[:0]
+		for _, index := range fullOrderedIndex {
+			if fullDirectory[index].Attached == 0 {
+				filtered = append(filtered, index)
 			}
 		}
+		fullOrderedIndex = filtered
 	}
 
 	return model.SeshSessions{

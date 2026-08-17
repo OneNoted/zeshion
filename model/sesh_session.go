@@ -12,7 +12,8 @@ type (
 	SeshWindowMap  map[string]WindowConfig
 
 	SeshSession struct {
-		Src  string // The source of the session (config, tmux, zoxide, tmuxinator)
+		ID   string // The backend-native identifier used for exact selection
+		Src  string // The source of the session (config, tmux, zellij, herdr, zoxide, tmuxinator)
 		Name string // The display name
 		Path string // The absolute directory path
 
@@ -30,6 +31,8 @@ type (
 	SeshSrcs struct {
 		Config     bool
 		Tmux       bool
+		Herdr      bool
+		Zellij     bool
 		Tmuxinator bool
 		Zoxide     bool
 	}

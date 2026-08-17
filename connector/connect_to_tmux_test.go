@@ -42,11 +42,13 @@ func TestConnectToTmuxReturnsStartupExecError(t *testing.T) {
 
 	mockStartup.On("ResolveCommand", connection.Session).Return("", nil)
 	mockStartup.On("WrapForShell", "").Return("")
-	mockTmux.On("NewSession", "demo", "/tmp", "").Return("", nil)
-	mockStartup.On("Exec", connection.Session).Return("", errors.New("boom"))
+	mockTmux.On("NewSession", "demo", "/tmp", "").Return("$1", nil)
+	startupSession := connection.Session
+	startupSession.ID = "$1"
+	mockStartup.On("Exec", startupSession).Return("", errors.New("boom"))
 
 	msg, err := connectToTmux(c, connection, model.ConnectOpts{})
 	assert.Equal(t, "", msg)
 	assert.EqualError(t, err, "boom")
-	mockTmux.AssertNotCalled(t, "SwitchOrAttach", "demo", model.ConnectOpts{})
+	mockTmux.AssertNotCalled(t, "SwitchOrAttach")
 }

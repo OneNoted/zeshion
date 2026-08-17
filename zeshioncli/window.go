@@ -7,6 +7,9 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+
+	"github.com/OneNoted/zeshion/model"
+	"github.com/OneNoted/zeshion/tmux"
 )
 
 func NewWindowCommand(base *BaseDeps) *cobra.Command {
@@ -32,14 +35,7 @@ func NewWindowCommand(base *BaseDeps) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				found := false
-				for _, s := range sessions {
-					if s.Name == targetSession {
-						found = true
-						break
-					}
-				}
-				if !found {
+				if !sessionTargetExists(sessions, targetSession) {
 					return fmt.Errorf("session '%s' not found", targetSession)
 				}
 			}
@@ -69,17 +65,15 @@ func NewWindowCommand(base *BaseDeps) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			for _, w := range windows {
-				if w.Name == name {
-					target := name
-					if targetSession != "" {
-						target = fmt.Sprintf("%s:%s", targetSession, name)
-					}
-					if _, err := deps.Mux.SelectWindow(target); err != nil {
-						return fmt.Errorf("failed to select window '%s': %w", name, err)
-					}
-					return nil
+			target, found, err := resolveWindowTarget(windows, deps.MuxName, targetSession, name)
+			if err != nil {
+				return err
+			}
+			if found {
+				if _, err := deps.Mux.SelectWindow(target); err != nil {
+					return fmt.Errorf("failed to select window '%s': %w", name, err)
 				}
+				return nil
 			}
 
 			expanded, err := base.Home.ExpandPath(name)
@@ -90,10 +84,10 @@ func NewWindowCommand(base *BaseDeps) *cobra.Command {
 			if !isDir {
 				return fmt.Errorf("'%s' is not an existing window or valid directory", name)
 			}
-
 			windowName := filepath.Base(absPath)
-			if _, err := deps.Mux.NewWindowInSession(windowName, absPath, targetSession, ""); err != nil {
-				return fmt.Errorf("failed to create window: %w", err)
+
+			if err := createWindow(deps.Mux, deps.MuxName, windowName, absPath, targetSession); err != nil {
+				return err
 			}
 			return nil
 		},
@@ -103,4 +97,64 @@ func NewWindowCommand(base *BaseDeps) *cobra.Command {
 	cmd.Flags().BoolP("json", "j", false, "output as json (list mode only)")
 
 	return cmd
+}
+
+func resolveWindowTarget(windows []*model.TmuxWindow, muxName, targetSession, name string) (string, bool, error) {
+	if muxName == "herdr" {
+		for _, window := range windows {
+			if window.ID == name {
+				return window.ID, true, nil
+			}
+		}
+	}
+
+	matches := make([]*model.TmuxWindow, 0, 1)
+	for _, window := range windows {
+		if window.Name == name {
+			matches = append(matches, window)
+		}
+	}
+	if len(matches) == 0 {
+		return "", false, nil
+	}
+	if len(matches) > 1 && muxName == "herdr" {
+		ids := make([]string, len(matches))
+		for index, window := range matches {
+			ids[index] = window.ID
+		}
+		return "", false, fmt.Errorf("window %q is ambiguous; use an ID: %s", name, strings.Join(ids, ", "))
+	}
+
+	target := matches[0].Name
+	switch {
+	case muxName == "herdr":
+		target = matches[0].ID
+	case muxName == "tmux" && targetSession != "":
+		target = fmt.Sprintf("%s:%s", targetSession, matches[0].ID)
+	case muxName == "zellij" && targetSession != "":
+		target = fmt.Sprintf("%s:%s", targetSession, matches[0].Name)
+	}
+	return target, true, nil
+}
+
+func sessionTargetExists(sessions []*model.TmuxSession, target string) bool {
+	for _, session := range sessions {
+		if session.Name == target || session.ID == target {
+			return true
+		}
+	}
+	return false
+}
+
+func createWindow(mux tmux.Tmux, muxName, name, path, targetSession string) error {
+	id, err := mux.NewWindowInSession(name, path, targetSession, "")
+	if err != nil {
+		return fmt.Errorf("failed to create window: %w", err)
+	}
+	if muxName == "herdr" {
+		if _, err := mux.SelectWindow(id); err != nil {
+			return fmt.Errorf("failed to select window '%s': %w", name, err)
+		}
+	}
+	return nil
 }

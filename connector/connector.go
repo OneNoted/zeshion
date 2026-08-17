@@ -14,6 +14,7 @@ import (
 
 type Connector interface {
 	Connect(name string, opts model.ConnectOpts) (string, error)
+	ConnectSession(session model.SeshSession, opts model.ConnectOpts) (string, error)
 }
 
 type RealConnector struct {
@@ -25,6 +26,7 @@ type RealConnector struct {
 	startup    startup.Startup
 	tmux       tmux.Tmux
 	zellij     tmux.Tmux
+	herdr      tmux.Tmux
 	mux        tmux.Tmux
 	muxName    string
 	zoxide     zoxide.Zoxide
@@ -40,23 +42,15 @@ func NewConnector(
 	startup startup.Startup,
 	tmux tmux.Tmux,
 	zellij tmux.Tmux,
+	herdr tmux.Tmux,
 	mux tmux.Tmux,
 	muxName string,
 	zoxide zoxide.Zoxide,
 	tmuxinator tmuxinator.Tmuxinator,
 ) Connector {
 	return &RealConnector{
-		config,
-		dir,
-		home,
-		lister,
-		namer,
-		startup,
-		tmux,
-		zellij,
-		mux,
-		muxName,
-		zoxide,
-		tmuxinator,
+		config: config, dir: dir, home: home, lister: lister, namer: namer, startup: startup,
+		tmux: tmux, zellij: zellij, herdr: herdr, mux: mux, muxName: muxName,
+		zoxide: zoxide, tmuxinator: tmuxinator,
 	}
 }

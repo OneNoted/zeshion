@@ -22,7 +22,7 @@ type PickerOptions struct {
 }
 
 type Picker interface {
-	Pick(fetchFunc FetchFunc, opts PickerOptions) (string, error)
+	Pick(fetchFunc FetchFunc, opts PickerOptions) (model.SeshSession, error)
 }
 
 type RealPicker struct {
@@ -33,7 +33,7 @@ func NewPicker(config model.Config) Picker {
 	return &RealPicker{config: config}
 }
 
-func (p *RealPicker) Pick(fetchFunc FetchFunc, opts PickerOptions) (string, error) {
+func (p *RealPicker) Pick(fetchFunc FetchFunc, opts PickerOptions) (model.SeshSession, error) {
 	showIcons := false
 	if opts.ShowIcons != nil {
 		showIcons = *opts.ShowIcons
@@ -59,17 +59,17 @@ func (p *RealPicker) Pick(fetchFunc FetchFunc, opts PickerOptions) (string, erro
 	prog := tea.NewProgram(m)
 	result, err := prog.Run()
 	if err != nil {
-		return "", fmt.Errorf("picker error: %w", err)
+		return model.SeshSession{}, fmt.Errorf("picker error: %w", err)
 	}
 	pickerModel, ok := result.(Model)
 	if !ok {
-		return "", errors.New("unexpected model type")
+		return model.SeshSession{}, errors.New("unexpected model type")
 	}
 	if pickerModel.LoadErr() != nil {
-		return "", fmt.Errorf("couldn't list sessions: %w", pickerModel.LoadErr())
+		return model.SeshSession{}, fmt.Errorf("couldn't list sessions: %w", pickerModel.LoadErr())
 	}
 	if pickerModel.Quit() {
-		return "", nil
+		return model.SeshSession{}, nil
 	}
-	return pickerModel.Chosen(), nil
+	return pickerModel.ChosenSession(), nil
 }

@@ -17,6 +17,9 @@ func NewLastCommand(base *BaseDeps) *cobra.Command {
 				return err
 			}
 
+			if deps.MuxName == "herdr" {
+				return fmt.Errorf("Herdr does not expose previous-workspace history")
+			}
 			lastSession, exists := deps.Lister.GetLastTmuxSession()
 			if deps.MuxName == "zellij" {
 				lastSession, exists = deps.Lister.GetLastZellijSession()

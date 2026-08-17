@@ -132,6 +132,69 @@ func (_c *MockLister_FindConfigWildcard_Call) RunAndReturn(run func(string) (mod
 	return _c
 }
 
+// FindHerdrSession provides a mock function with given fields: name
+func (_m *MockLister) FindHerdrSession(name string) (model.SeshSession, bool, error) {
+	ret := _m.Called(name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for FindHerdrSession")
+	}
+
+	var r0 model.SeshSession
+	var r1 bool
+	var r2 error
+	if rf, ok := ret.Get(0).(func(string) (model.SeshSession, bool, error)); ok {
+		return rf(name)
+	}
+	if rf, ok := ret.Get(0).(func(string) model.SeshSession); ok {
+		r0 = rf(name)
+	} else {
+		r0 = ret.Get(0).(model.SeshSession)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) bool); ok {
+		r1 = rf(name)
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	if rf, ok := ret.Get(2).(func(string) error); ok {
+		r2 = rf(name)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
+// MockLister_FindHerdrSession_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'FindHerdrSession'
+type MockLister_FindHerdrSession_Call struct {
+	*mock.Call
+}
+
+// FindHerdrSession is a helper method to define mock.On call
+//   - name string
+func (_e *MockLister_Expecter) FindHerdrSession(name interface{}) *MockLister_FindHerdrSession_Call {
+	return &MockLister_FindHerdrSession_Call{Call: _e.mock.On("FindHerdrSession", name)}
+}
+
+func (_c *MockLister_FindHerdrSession_Call) Run(run func(name string)) *MockLister_FindHerdrSession_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *MockLister_FindHerdrSession_Call) Return(_a0 model.SeshSession, _a1 bool, _a2 error) *MockLister_FindHerdrSession_Call {
+	_c.Call.Return(_a0, _a1, _a2)
+	return _c
+}
+
+func (_c *MockLister_FindHerdrSession_Call) RunAndReturn(run func(string) (model.SeshSession, bool, error)) *MockLister_FindHerdrSession_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // FindTmuxSession provides a mock function with given fields: name
 func (_m *MockLister) FindTmuxSession(name string) (model.SeshSession, bool) {
 	ret := _m.Called(name)
@@ -352,6 +415,61 @@ func (_c *MockLister_FindZoxideSession_Call) Return(_a0 model.SeshSession, _a1 b
 }
 
 func (_c *MockLister_FindZoxideSession_Call) RunAndReturn(run func(string) (model.SeshSession, bool)) *MockLister_FindZoxideSession_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetAttachedHerdrSession provides a mock function with no fields
+func (_m *MockLister) GetAttachedHerdrSession() (model.SeshSession, bool) {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAttachedHerdrSession")
+	}
+
+	var r0 model.SeshSession
+	var r1 bool
+	if rf, ok := ret.Get(0).(func() (model.SeshSession, bool)); ok {
+		return rf()
+	}
+	if rf, ok := ret.Get(0).(func() model.SeshSession); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(model.SeshSession)
+	}
+
+	if rf, ok := ret.Get(1).(func() bool); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Get(1).(bool)
+	}
+
+	return r0, r1
+}
+
+// MockLister_GetAttachedHerdrSession_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetAttachedHerdrSession'
+type MockLister_GetAttachedHerdrSession_Call struct {
+	*mock.Call
+}
+
+// GetAttachedHerdrSession is a helper method to define mock.On call
+func (_e *MockLister_Expecter) GetAttachedHerdrSession() *MockLister_GetAttachedHerdrSession_Call {
+	return &MockLister_GetAttachedHerdrSession_Call{Call: _e.mock.On("GetAttachedHerdrSession")}
+}
+
+func (_c *MockLister_GetAttachedHerdrSession_Call) Run(run func()) *MockLister_GetAttachedHerdrSession_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockLister_GetAttachedHerdrSession_Call) Return(_a0 model.SeshSession, _a1 bool) *MockLister_GetAttachedHerdrSession_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockLister_GetAttachedHerdrSession_Call) RunAndReturn(run func() (model.SeshSession, bool)) *MockLister_GetAttachedHerdrSession_Call {
 	_c.Call.Return(run)
 	return _c
 }

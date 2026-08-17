@@ -38,6 +38,9 @@ func srcs(opts ListOptions) []string {
 	if opts.Zellij {
 		count++
 	}
+	if opts.Herdr {
+		count++
+	}
 	if opts.Config {
 		count++
 	}
@@ -51,7 +54,7 @@ func srcs(opts ListOptions) []string {
 		count++
 	}
 	if count == 0 {
-		return []string{"tmux", "zellij", "config", "tmuxinator", "zoxide"}
+		return []string{"tmux", "zellij", "herdr", "config", "tmuxinator", "zoxide"}
 	}
 	srcs := make([]string, 0, count)
 	if opts.Tmux {
@@ -59,6 +62,9 @@ func srcs(opts ListOptions) []string {
 	}
 	if opts.Zellij {
 		srcs = append(srcs, "zellij")
+	}
+	if opts.Herdr {
+		srcs = append(srcs, "herdr")
 	}
 	if opts.Config {
 		srcs = append(srcs, "config")

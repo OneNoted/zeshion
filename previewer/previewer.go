@@ -24,6 +24,7 @@ type RealPreviewer struct {
 func NewPreviewer(
 	lister lister.Lister,
 	tmux tmux.Tmux,
+	muxName string,
 	icon icon.Icon,
 	dir dir.Dir,
 	home home.Home,
@@ -31,8 +32,12 @@ func NewPreviewer(
 	config model.Config,
 	shell shell.Shell,
 ) Previewer {
+	var liveStrategy PreviewStrategy = NewTmuxStrategy(lister, tmux)
+	if muxName == "herdr" {
+		liveStrategy = NewHerdrStrategy(lister, tmux)
+	}
 	strategies := []PreviewStrategy{
-		NewTmuxStrategy(lister, tmux),
+		liveStrategy,
 		NewConfigStrategy(lister, shell),
 		NewDefaultConfigStrategy(lister, config, ls),
 		NewDirectoryStrategy(home, dir, ls),
